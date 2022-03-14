@@ -1,0 +1,43 @@
+<script>
+  function spellFilterPMs() {
+    var countrySelect = document.getElementById("spell-country");
+    if (countrySelect == null) {
+      return;
+    };
+    var selected = countrySelect.value;
+    var els = document
+    .getElementsByClassName("spell-payment-method");
+    var first = true;
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      var countries = JSON
+      .parse(el.getAttribute("data-countries"));
+
+      var includes = false;
+      check_includes:
+        for (var j = 0; j < countries.length; j++) {
+          switch (countries[j]) {
+            case selected:
+            case "any":
+              includes = true;
+              break check_includes;
+          }
+        }
+
+      el.parentElement.style.display = includes
+        ? ""
+        : "none";
+      el.checked = false;
+      if (includes && first) {
+        first = false;
+        el.checked = true;
+      }
+    }
+  }
+
+  var countrySelect = document.getElementById("spell-country");
+  if (countrySelect != null) {
+    countrySelect.addEventListener("change", spellFilterPMs);
+  }
+  spellFilterPMs();
+</script>
