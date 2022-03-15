@@ -4,7 +4,11 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname(__FILE__) . '/../../spell-woocommerce.php';
 
+
+add_action('wp_head', 'add_pay_later_widget_script_to_head');
+add_action('woocommerce_after_add_to_cart_button', 'add_pay_later_widget_in_product');
 add_action('woocommerce_after_add_to_cart_button', 'add_direct_payment_button_in_product');
+
 function add_direct_payment_button_in_product()
 {
     class Spell_Product
@@ -48,4 +52,48 @@ function add_direct_payment_button_in_product()
 
     $GLOBALS['wc_spell_product'] = new Spell_Product();
     echo $GLOBALS['wc_spell_product']->init_button();
+}
+
+function add_pay_later_widget_in_product()
+{
+    class Pay_Later_Widget
+    {
+        public function __construct()
+        {
+            $this->spellPayment = new WC_Spell_Gateway();
+        }
+
+        public function init_widget()
+        {
+            global $product;
+            
+            $API_enabled = $this->spellPayment->get_option('enabled') === 'yes' ? true : false;
+
+            $product_price=method_exists( $product, 'get_price' ) === true ? $product->get_price() : $product->price;
+            $product_price=bcmul((string) $product_price, '100');
+            $language=substr(get_locale(), 0, 2);
+            $brand_id=$this->spellPayment->get_option('brand-id');
+
+            if ($API_enabled && $brand_id!=='') {
+
+                $widget_html = sprintf('<klix-pay-later amount="%d" brand_id="%s" 
+                language="%s" theme="light" view="product">
+                </klix-pay-later>',$product_price,$brand_id,$language);
+
+                return $widget_html;
+            }
+            return '';
+        }
+    }
+
+    $GLOBALS['wc_spell_product'] = new Pay_Later_Widget();
+    echo $GLOBALS['wc_spell_product']->init_widget();
+}
+
+function add_pay_later_widget_script_to_head()
+{
+    ?>
+   <script type="module" src="https://klix.blob.core.windows.net/public/pay-later-widget/build/klix-pay-later-widget.esm.js"></script>
+   <script nomodule="" src="https://klix.blob.core.windows.net/public/pay-later-widget/build/klix-pay-later-widget.js"></script>
+    <?php
 }
