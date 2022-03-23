@@ -111,7 +111,7 @@ function wc_spell_payment_gateway_init()
         /**
          * Hide redundant settings in the admin panel
          */
-        if (function_exists('get_current_screen') && get_current_screen()->id === 'woocommerce_page_wc-settings') {
+        if (function_exists('get_current_screen') && get_current_screen() !== null && get_current_screen()->id === 'woocommerce_page_wc-settings') {
             return $methods;
         }
 
