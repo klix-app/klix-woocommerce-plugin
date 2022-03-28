@@ -70,7 +70,7 @@ function add_pay_later_widget_in_product()
             $API_enabled = $this->spellPayment->get_option('enabled') === 'yes' ? true : false;
 
             $product_price=method_exists( $product, 'get_price' ) === true ? $product->get_price() : $product->price;
-            $product_price=bcmul((string) $product_price, '100');
+            $product_price=(float) $product_price * 100;
             $language=substr(get_locale(), 0, 2);
             $brand_id=$this->spellPayment->get_option('brand-id');
 
