@@ -95,7 +95,7 @@ class WC_Spell_Gateway_Payment_Helper
                 $result .= "<div class=\"spell--pm-wrapper\"><input type=radio class=spell-payment-method name=spell-payment-method-{$payment_group_id} value=\"{$payment_method["id"]}\"";
                 $result .= ($index == 0 ? 'checked=checked' : '');
                 $result .= '>';
-                $result .= "<span style=\"font-size: 14px;\">{$payment_method['label']}</span></div>";
+                $result .= "<label style=\"font-size: 14px;\">{$payment_method['label']}</label></div>";
                 $result .= "<div class=\"spell-pm-image\"><img alt='{$payment_method['label']}' src='{$payment_method['logo']}'></div>";
                 $result .= '</label>';
             }
