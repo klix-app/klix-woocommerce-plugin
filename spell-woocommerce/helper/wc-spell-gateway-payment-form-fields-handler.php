@@ -54,6 +54,20 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
                 ),
                 'default' => '',
             ),
+            'order-status-after-payment' => array(
+                'title' => __('Order status', 'woocommerce-spell'),
+                'type' => 'select',
+                'description' => __(
+                    'Specify to which status, order should change after successful payment',
+                    'woocommerce-spell'
+                ),
+                'options'=>[
+                    'processing'=>'Processing',
+                    'completed'=>'Completed'
+                ],
+                'default' => 'processing',
+            ),
+
             'debug' => array(
                 'title' => __('Debug Log', 'woocommerce'),
                 'type' => 'checkbox',

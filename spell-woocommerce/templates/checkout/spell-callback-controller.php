@@ -5,6 +5,8 @@ defined('ABSPATH') || exit;
 require_once dirname(__FILE__) . '/../../spell-woocommerce.php';
 
 add_action('woocommerce_api_wc_spell_callback', 'handle_spell_callback');
+add_action( 'woocommerce_thankyou', 'custom_woocommerce_auto_complete_order' );
+
 function handle_spell_callback()
 {
     class Spell_Callback_Controller
@@ -57,7 +59,7 @@ function handle_spell_callback()
                         /**
                          * Update the order status to "complete" and add the purchase notes from the response.
                          */
-                        $order->update_status('completed', $payment_data['purchase']['notes'], TRUE);
+                        $order->update_status('completed', $payment_data['purchase']['notes']);
 
                         $this->log_order_info('direct payment processed', $order);
                     }
@@ -172,4 +174,15 @@ function handle_spell_callback()
     }
 
     new Spell_Callback_Controller();
+}
+
+function custom_woocommerce_auto_complete_order( $order_id ) { 
+    if ( ! $order_id ) {
+        return;
+    }
+    $spellPayment = new WC_Spell_Gateway();
+    $orderStatus = $spellPayment->get_option('order-status-after-payment');
+    
+    $order = wc_get_order( $order_id );
+    $order->update_status( $orderStatus );
 }
