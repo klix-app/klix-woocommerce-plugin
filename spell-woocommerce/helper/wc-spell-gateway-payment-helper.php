@@ -118,6 +118,11 @@ class WC_Spell_Gateway_Payment_Helper
         foreach ($cart as $key => $cart_item) {
             $cart_product = $cart_item['data'];
             $name = method_exists($cart_product, 'get_name') === true ? $cart_product->get_name() : $cart_product->name;
+            
+            if(isset($cart_item['quantity'])) {
+                $name.=' x '.$cart_item['quantity'];
+            }
+
             if (array_keys($cart)[0] == $key) {
                 $nameString = $name;
             } else {
