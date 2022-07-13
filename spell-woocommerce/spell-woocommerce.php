@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.1.2e7
+ * Version: 1.2.2e8
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -165,7 +165,34 @@ function wc_spell_payment_gateway_init()
         return $methods;
     }
 
-    add_filter('woocommerce_payment_gateways', 'woocommerce_add_spell_gateway');
+    /**
+	 * By default, new payment gateways are put at the bottom of the list on the admin "Payments" settings screen.
+	 *
+	 * @param array $ordering Existing ordering of the payment gateways.
+	 *
+	 * @return array Modified ordering.
+	 */
+	function set_gateway_in_sorting_list( $ordering ) {
+		$ordering                   = (array) $ordering;
+		$ordering['klix']           = $ordering['spell'];
+		$ordering['bank_transfer']  = $ordering['spell'];
+		$ordering['klix_card']      = $ordering['spell'];
+		$ordering['klix_pay_later'] = $ordering['spell'];
+
+
+        asort( $ordering );
+        $i = 0;
+        foreach ( $ordering as $key => $order ) {
+            $ordering[ $key ] = $i;
+            $i++;
+        }
+
+		return $ordering;
+	}
+
+	add_filter( 'option_woocommerce_gateway_order', 'set_gateway_in_sorting_list' );
+	add_filter( 'default_option_woocommerce_gateway_order', 'set_gateway_in_sorting_list' );
+	add_filter( 'woocommerce_payment_gateways', 'woocommerce_add_spell_gateway' );
 
     function wp_add_spell_setting_link($links)
     {
