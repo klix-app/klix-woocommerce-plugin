@@ -86,12 +86,6 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
 
     public function handle_callback()
     {
-        // Docs http://docs.woothemes.com/document/payment-gateway-api/
-        // http://127.0.0.1/wordpress/?wc-api=wc_gateway_spell&id=&action={paid,sent}
-        // The new URL scheme
-        // (http://127.0.0.1/wordpress/wc-api/wc_gateway_spell) is broken
-        // for some reason.
-        // Old one still works.
 
         $GLOBALS['wpdb']->get_results(
             "SELECT GET_LOCK('spell_payment', 15);"
@@ -106,29 +100,34 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         $payment_redirect = $this->get_return_url($o);
         if (!$payment_id) {
             $input = json_decode(file_get_contents('php://input'), true);
-            $payment_id = array_key_exists('id', $input) ? $input['id'] : '';
-        }
-
-        if ($this->spell_api()->was_payment_successful($payment_id)) {
-            if (!$o->is_paid()) {
-                $o->payment_complete($payment_id);
-                $o->add_order_note(
-                    sprintf(__('Payment Successful. Transaction ID: %s', 'woocommerce'), $payment_id)
-                );
+            if($input !== null) {
+                $payment_id = array_key_exists('id', $input) ? $input['id'] : '';
             }
-            WC()->cart->empty_cart();
-            $this->log_order_info('payment processed', $o);
-        } else {
-            if (!$o->is_paid()) {
-                $o->update_status(
-                    'wc-failed',
-                    __('ERROR: Payment was received, but order verification failed.')
-                );
-                $this->log_order_info('payment not successful', $o);
-            }
-            $cancel_redirect = $woocommerce->cart->get_cart_url();
-            $payment_redirect = $cancel_redirect;
         }
+        
+        if ($payment_id !== "") {
+            if ($this->spell_api()->was_payment_successful($payment_id)) {
+                if (!$o->is_paid()) {
+                    $o->payment_complete($payment_id);
+                    $o->add_order_note(
+                        sprintf(__('Payment Successful. Transaction ID: %s', 'woocommerce'), $payment_id)
+                    );
+                }
+                WC()->cart->empty_cart();
+                $this->log_order_info('payment processed', $o);
+            } else {
+                if ($o->get_status() === "pending") {
+                    $o->update_status(
+                        'wc-failed',
+                        __('Order not paid.')
+                    );
+                    $this->log_order_info('payment not successful', $o);
+                }
+                $cancel_redirect = $woocommerce->cart->get_cart_url();
+                $payment_redirect = $cancel_redirect;
+            }
+        }
+        
 
         $GLOBALS['wpdb']->get_results(
             "SELECT RELEASE_LOCK('spell_payment');"
