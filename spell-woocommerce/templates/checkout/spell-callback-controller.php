@@ -176,13 +176,25 @@ function handle_spell_callback()
     new Spell_Callback_Controller();
 }
 
-function custom_woocommerce_auto_complete_order( $order_id ) { 
-    if ( ! $order_id ) {
-        return;
-    }
-    $spellPayment = new WC_Spell_Gateway();
-    $orderStatus = $spellPayment->get_option('order-status-after-payment');
+function custom_woocommerce_auto_complete_order( $order_id ) {
     
     $order = wc_get_order( $order_id );
-    $order->update_status( $orderStatus );
+    
+    $purchase_id=WC()->session->get(
+        'spell_payment_id_' . $order_id
+    );
+    $payment_gateways=["bank_transfer","klix_card","klix_pay_later"];
+    
+    if($purchase_id === "" or !in_array($order->payment_method, $payment_gateways)){
+        return;
+    }
+
+    $klix_gateway=new WC_Spell_Gateway_Payment_Api();
+    $payment_successful=$klix_gateway->spell_api()->was_payment_successful($purchase_id);
+
+    if( $payment_successful ) {    
+        $spellPayment = new WC_Spell_Gateway();
+        $orderStatus = $spellPayment->get_option('order-status-after-payment');
+        $order->update_status( $orderStatus );
+    }
 }
