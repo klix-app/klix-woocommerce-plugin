@@ -192,9 +192,10 @@ function custom_woocommerce_auto_complete_order( $order_id ) {
     $klix_gateway=new WC_Spell_Gateway_Payment_Api();
     $payment_successful=$klix_gateway->spell_api()->was_payment_successful($purchase_id);
 
-    if( $payment_successful ) {    
-        $spellPayment = new WC_Spell_Gateway();
-        $orderStatus = $spellPayment->get_option('order-status-after-payment');
+    $spellPayment = new WC_Spell_Gateway();
+    $orderStatus = $spellPayment->get_option('order-status-after-payment');
+
+    if( $payment_successful && ($order->status !== "completed" &&  $orderStatus === "completed")) {    
         $order->update_status( $orderStatus );
     }
 }
