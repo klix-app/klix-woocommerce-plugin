@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.2.6
+ * Version: 1.2.7
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -218,6 +218,8 @@ function wc_spell_payment_gateway_init()
     function disable_spell_on_the_frontend($available_gateways)
     {
         $shared_settings = new WC_Spell_Gateway_Payment_Settings();
+        $spell_api = new WC_Spell_Gateway_Payment_Api();
+        $payment_helper = new WC_Spell_Gateway_Payment_Helper();
 
         /**
          * Fallback to the default settings.
@@ -226,11 +228,56 @@ function wc_spell_payment_gateway_init()
             return $available_gateways;
         }
 
+        if ($shared_settings->get_option('hid') === 'yes') {
+            $payment_methods = $spell_api->spell_api()->payment_methods(
+                get_woocommerce_currency(),
+                $payment_helper->get_language()
+            );
+
+            if (is_null($payment_methods)) {
+                echo('System error!');
+                return;
+            }
+
+            if (!array_key_exists("by_country", $payment_methods)) {
+                echo 'Plugin configuration error!';
+                return;
+            }
+
+            $payment_groups_mapper = new WC_Spell_Gateway_Payment_Methods_Mapper($payment_methods);
+            $payment_groups = $payment_groups_mapper->get_payment_groups();
+            $GLOBALS['spell_payment_groups'] = $payment_groups;
+
+            $payment_groups_map = [
+                'klix' => WC_Spell_Gateway_Klix::class,
+                'bank_transfer' => WC_Spell_Gateway_Bank_Transfer::class,
+                'klix_card' => WC_Spell_Gateway_Klix_Card::class,
+                'klix_pay_later' => WC_Spell_Gateway_Klix_Pay_Later::class,
+            ];
+
+            foreach ($payment_groups as $payment_group) {
+                if (array_key_exists($payment_group['id'], $payment_groups_map)) {
+                    $klix_available_gateways[$payment_group['id']] = new $payment_groups_map[$payment_group['id']];
+                }
+            }
+            $available_gateways = array_splice_after_key($available_gateways,'spell',$klix_available_gateways);
+        }
         if (isset($available_gateways['spell'])) {
             unset($available_gateways['spell']);
         }
 
         return $available_gateways;
+    }
+
+    function array_splice_after_key($array, $key, $array_to_insert)
+    {
+        $key_pos = array_search($key, array_keys($array));
+        if($key_pos !== false){
+            $key_pos++;
+            $second_array = array_splice($array, $key_pos);
+            $array = array_merge($array, $array_to_insert, $second_array);
+        }
+        return $array;
     }
 
     add_filter('woocommerce_available_payment_gateways', 'disable_spell_on_the_frontend');
