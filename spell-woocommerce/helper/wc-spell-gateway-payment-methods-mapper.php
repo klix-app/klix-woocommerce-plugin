@@ -33,6 +33,14 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
                 $this->result[$payment_group['name']] = $this->map_payment_group($payment_group);
             }
         }
+        $new_method_order=[];
+        foreach($this->payment_method_order as $payment_method){
+            if(array_key_exists($payment_method,$this->result)){
+                $new_method_order[$payment_method]=$this->result[$payment_method];
+            }
+        }
+
+        $this->result=$new_method_order;
     }
 
     private function map_payment_group($payment_group)
