@@ -174,11 +174,13 @@ function wc_spell_payment_gateway_init()
 	 */
 	function set_gateway_in_sorting_list( $ordering ) {
 		$ordering                   = (array) $ordering;
-		$ordering['klix']           = $ordering['spell'];
-		$ordering['bank_transfer']  = $ordering['spell'];
-		$ordering['klix_card']      = $ordering['spell'];
-		$ordering['klix_pay_later'] = $ordering['spell'];
 
+        if ( isset($ordering['spell']) ) {
+            $ordering['klix']           = $ordering['spell'];
+            $ordering['bank_transfer']  = $ordering['spell'];
+            $ordering['klix_card']      = $ordering['spell'];
+            $ordering['klix_pay_later'] = $ordering['spell'];
+        }
 
         asort( $ordering );
         $i = 0;
