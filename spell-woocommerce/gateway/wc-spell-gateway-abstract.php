@@ -182,7 +182,7 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
             'success_redirect' => $u . "&action=paid",
             'failure_redirect' => $u . "&action=cancel",
             'cancel_redirect' => $u . "&action=cancel",
-            'creator_agent' => 'Woocommerce v3 module: ' . SPELL_MODULE_VERSION,
+            'creator_agent' => 'Woocommerce v3 module: ' . SPELL_MODULE_VERSION ." | WooCommerce version: ". WC_VERSION,
             'reference' => (string)$o->get_order_number(),
             'platform' => 'woocommerce',
             'purchase' => [
@@ -272,7 +272,7 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
             'success_redirect' => $url . '&action=paid',
             'failure_redirect' => $url . '&action=cancel',
             'cancel_redirect' => $url . '&action=cancel',
-            'creator_agent' => 'Woocommerce v3 module: ' . SPELL_MODULE_VERSION,
+            'creator_agent' => 'Woocommerce v3 module: ' . SPELL_MODULE_VERSION ." | WooCommerce version: ". WC_VERSION,
             'platform' => 'woocommerce',
             'client' => [
                 'email' => 'dummy@data.com',

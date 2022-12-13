@@ -70,7 +70,7 @@ function add_pay_later_widget_in_product()
             
             $API_enabled = $this->spellPayment->get_option('enabled') === 'yes' ? true : false;
 
-            $product_price=method_exists($product,'get_display_price') === true ? $product->get_display_price() : wc_get_price_to_display($product);
+            $product_price=wc_get_price_to_display($product);
 
             $product_price=round($product_price,2)*100;
 

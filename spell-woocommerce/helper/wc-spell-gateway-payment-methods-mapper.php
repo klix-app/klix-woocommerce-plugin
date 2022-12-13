@@ -3,7 +3,7 @@
 class WC_Spell_Gateway_Payment_Methods_Mapper
 {
     const IMAGE_BASE_URL = 'https://portal.klix.app';
-
+    private $payment_method_order=["bank_transfer","klix_card","klix_pay_later"];
     private $api_response;
     private $active_country;
     private $result = [];

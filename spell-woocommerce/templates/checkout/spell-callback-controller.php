@@ -185,7 +185,7 @@ function custom_woocommerce_auto_complete_order( $order_id ) {
     );
     $payment_gateways=["bank_transfer","klix_card","klix_pay_later"];
     
-    if($purchase_id === "" or !in_array($order->payment_method, $payment_gateways)){
+    if($purchase_id === "" or $purchase_id === null or !in_array($order->get_payment_method(), $payment_gateways)){
         return;
     }
 
@@ -195,7 +195,7 @@ function custom_woocommerce_auto_complete_order( $order_id ) {
     $spellPayment = new WC_Spell_Gateway();
     $orderStatus = $spellPayment->get_option('order-status-after-payment');
 
-    if( $payment_successful && ($order->status !== "completed" &&  $orderStatus === "completed")) {    
+    if( $payment_successful && ($order->get_status() !== "completed" &&  $orderStatus === "completed")) {    
         $order->update_status( $orderStatus );
     }
 }
