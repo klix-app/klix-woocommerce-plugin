@@ -1,6 +1,6 @@
 <?php
 
-define('SPELL_MODULE_VERSION', 'v1.3.2');
+define('SPELL_MODULE_VERSION', 'v1.3.3');
 define("ROOT_URL", "https://portal.klix.app");
 
 class SpellAPI
@@ -19,12 +19,12 @@ class SpellAPI
         return $this->call('POST', '/purchases/', $params);
     }
 
-    public function payment_methods($currency, $language)
+    public function payment_methods($currency, $language,$amount)
     {
         $this->log_info("fetching payment methods");
         return $this->call(
             'GET',
-            "/payment_methods/?brand_id={$this->brand_id}&currency={$currency}&language={$language}"
+            "/payment_methods/?brand_id={$this->brand_id}&currency={$currency}&language={$language}&amount={$amount}"
         );
     }
 
