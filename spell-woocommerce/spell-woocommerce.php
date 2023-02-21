@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.3.3
+ * Version: 1.3.4
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -29,8 +29,8 @@ class WC_Spell
 {
     public function __construct()
     {
-        add_action('init', array($this, 'init_helper_classes'), 5);
-        add_action('init', array($this, 'init_gateway_classes'), 5);
+        add_action('plugins_loaded', array($this, 'init_helper_classes'), 5);
+        add_action('plugins_loaded', array($this, 'init_gateway_classes'), 5);
         add_action('init', array($this, 'include_template_functions'), 20);
         add_action('init', array($this, 'wc_session_enabler'), 25);
         add_action('wp_enqueue_scripts', array($this, 'wc_spell_load_css'));
