@@ -195,7 +195,11 @@ function custom_woocommerce_auto_complete_order( $order_id ) {
     $spellPayment = new WC_Spell_Gateway();
     $orderStatus = $spellPayment->get_option('order-status-after-payment');
 
-    if( $payment_successful && ($order->get_status() !== "completed" &&  $orderStatus === "completed")) {    
+    if( $payment_successful && ($order->get_status() !== "completed" &&  $orderStatus === "completed")) {
+        $order->payment_complete($purchase_id);
+        $order->add_order_note(
+            sprintf(__('Payment Successful. Transaction ID: %s', 'woocommerce'), $purchase_id)
+        );
         $order->update_status( $orderStatus );
     }
 }
