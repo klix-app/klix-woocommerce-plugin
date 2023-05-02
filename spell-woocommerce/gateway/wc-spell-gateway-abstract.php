@@ -133,7 +133,9 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
             "SELECT RELEASE_LOCK('spell_payment');"
         );
 
-        header("Location: " . $payment_redirect);
+        if($_SERVER['REQUEST_METHOD'] == 'GET') {
+            header("Location: " . $payment_redirect);
+        }
     }
 
     /**
