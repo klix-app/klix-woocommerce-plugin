@@ -226,12 +226,17 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
      */
     private function get_billing_country()
     {
-        $billing_country = WC()->checkout()->get_value('billing_country');
-        $billing_country = empty($billing_country) ? WC()->countries->get_base_country() : $billing_country;
-        $allowed_countries = WC()->countries->get_allowed_countries();
+        $billing_country='';
 
-        if (!array_key_exists($billing_country, $allowed_countries)) {
-            $billing_country = current(array_keys($allowed_countries));
+        if (isset(WC()->checkout) && WC()->checkout instanceof WC_Checkout) {
+          
+            $billing_country = WC()->checkout->get_value('billing_country');
+            $billing_country = empty($billing_country) ? WC()->countries->get_base_country() : $billing_country;
+            $allowed_countries = WC()->countries->get_allowed_countries();
+
+            if (!array_key_exists($billing_country, $allowed_countries)) {
+                $billing_country = current(array_keys($allowed_countries));
+            }
         }
 
         return $billing_country;
