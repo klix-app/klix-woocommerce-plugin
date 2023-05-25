@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.3.8
+ * Version: 1.4.0
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -143,32 +143,25 @@ function wc_spell_payment_gateway_init()
                 $amount
             );
 
-            if (is_null($payment_methods)) {
-                echo('System error!');
-                return;
-            }
-
-            if (!array_key_exists("by_country", $payment_methods)) {
-                echo 'Plugin configuration error!';
-                return;
-            }
-
-            $payment_groups_mapper = new WC_Spell_Gateway_Payment_Methods_Mapper($payment_methods);
-            $payment_groups = $payment_groups_mapper->get_payment_groups();
-            $GLOBALS['spell_payment_groups'] = $payment_groups;
-
-            $payment_groups_map = [
-                'klix' => WC_Spell_Gateway_Klix::class,
-                'klix_pay_later' => WC_Spell_Gateway_Klix_Pay_Later::class,
-                'klix_card' => WC_Spell_Gateway_Klix_Card::class,
-                'bank_transfer' => WC_Spell_Gateway_Bank_Transfer::class,
-            ];
-
-            foreach ($payment_groups as $payment_group) {
-                if (array_key_exists($payment_group['id'], $payment_groups_map)) {
-                    $methods[] = $payment_groups_map[$payment_group['id']];
+            if(!is_null($payment_methods) and array_key_exists("by_country", $payment_methods)) {
+                $payment_groups_mapper = new WC_Spell_Gateway_Payment_Methods_Mapper($payment_methods);
+                $payment_groups = $payment_groups_mapper->get_payment_groups();
+                $GLOBALS['spell_payment_groups'] = $payment_groups;
+    
+                $payment_groups_map = [
+                    'klix' => WC_Spell_Gateway_Klix::class,
+                    'klix_pay_later' => WC_Spell_Gateway_Klix_Pay_Later::class,
+                    'klix_card' => WC_Spell_Gateway_Klix_Card::class,
+                    'bank_transfer' => WC_Spell_Gateway_Bank_Transfer::class,
+                ];
+    
+                foreach ($payment_groups as $payment_group) {
+                    if (array_key_exists($payment_group['id'], $payment_groups_map)) {
+                        $methods[] = $payment_groups_map[$payment_group['id']];
+                    }
                 }
             }
+            
         }
 
         return $methods;
@@ -255,40 +248,34 @@ function wc_spell_payment_gateway_init()
                 $amount
             );
 
-            if (is_null($payment_methods)) {
-                echo('System error!');
-                return;
-            }
-
-            if (!array_key_exists("by_country", $payment_methods)) {
-                echo 'Plugin configuration error!';
-                return;
-            }
-
-            $payment_groups_mapper = new WC_Spell_Gateway_Payment_Methods_Mapper($payment_methods);
-            $payment_groups = $payment_groups_mapper->get_payment_groups();
-            $GLOBALS['spell_payment_groups'] = $payment_groups;
-
-            $payment_groups_map = [
-                'klix' => WC_Spell_Gateway_Klix::class,
-                'bank_transfer' => WC_Spell_Gateway_Bank_Transfer::class,
-                'klix_card' => WC_Spell_Gateway_Klix_Card::class,
-                'klix_pay_later' => WC_Spell_Gateway_Klix_Pay_Later::class,
-            ];
-
-            $klix_available_gateways=[];
-            foreach ($payment_groups as $payment_group) {
-                if (array_key_exists($payment_group['id'], $payment_groups_map)) {
-                    $klix_available_gateways[$payment_group['id']] = new $payment_groups_map[$payment_group['id']];
+            if(!is_null($payment_methods) and array_key_exists("by_country", $payment_methods)) {
+                
+                $payment_groups_mapper = new WC_Spell_Gateway_Payment_Methods_Mapper($payment_methods);
+                $payment_groups = $payment_groups_mapper->get_payment_groups();
+                $GLOBALS['spell_payment_groups'] = $payment_groups;
+    
+                $payment_groups_map = [
+                    'klix' => WC_Spell_Gateway_Klix::class,
+                    'bank_transfer' => WC_Spell_Gateway_Bank_Transfer::class,
+                    'klix_card' => WC_Spell_Gateway_Klix_Card::class,
+                    'klix_pay_later' => WC_Spell_Gateway_Klix_Pay_Later::class,
+                ];
+    
+                $klix_available_gateways=[];
+                foreach ($payment_groups as $payment_group) {
+                    if (array_key_exists($payment_group['id'], $payment_groups_map)) {
+                        $klix_available_gateways[$payment_group['id']] = new $payment_groups_map[$payment_group['id']];
+                    }
+                }
+                if($available_gateways !=null and $klix_available_gateways!=null and count($klix_available_gateways)>0) {
+                    $available_gateways = array_splice_after_key($available_gateways,'spell',$klix_available_gateways);
+                }
+                if (isset($available_gateways['spell'])) {
+                    unset($available_gateways['spell']);
                 }
             }
-            if($available_gateways !=null and $klix_available_gateways!=null and count($klix_available_gateways)>0) {
-                $available_gateways = array_splice_after_key($available_gateways,'spell',$klix_available_gateways);
-            }
         }
-        if (isset($available_gateways['spell'])) {
-            unset($available_gateways['spell']);
-        }
+            
 
         return $available_gateways;
     }

@@ -1,6 +1,6 @@
 <?php
 
-define('SPELL_MODULE_VERSION', 'v1.3.8');
+define('SPELL_MODULE_VERSION', 'v1.4.0');
 define("ROOT_URL", "https://portal.klix.app");
 
 class SpellAPI
@@ -21,11 +21,25 @@ class SpellAPI
 
     public function payment_methods($currency, $language,$amount)
     {
+        $payment_methods=get_transient('spell-payment-methods');
+        
+        if($payment_methods){
+            $this->log_info("payment methods received from cache");
+            return get_transient('spell-payment-methods');
+        }
+
         $this->log_info("fetching payment methods");
-        return $this->call(
+
+        $payment_methods= $this->call(
             'GET',
             "/payment_methods/?brand_id={$this->brand_id}&currency={$currency}&language={$language}&amount={$amount}"
         );
+
+        if($payment_methods!=null) {
+            set_transient('spell-payment-methods',$payment_methods,300);
+        }
+       
+        return $payment_methods;
     }
 
     public function was_payment_successful($payment_id)

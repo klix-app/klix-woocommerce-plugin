@@ -26,6 +26,10 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
 
     private function map_payment_groups()
     {
+        if(!array_key_exists('payment_method_groups',$this->api_response)) {
+            return;
+        }
+            
         $payment_groups = $this->api_response['payment_method_groups'];
 
         foreach ($payment_groups as $payment_group) {
@@ -173,6 +177,9 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
      */
     private function get_country_options()
     {
+        if(!array_key_exists('by_country',$this->api_response)) {
+            return null;
+        }
         return array_values(array_unique(
             array_keys($this->api_response['by_country'])
         ));
@@ -187,7 +194,9 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
     private function get_active_country()
     {
         $country_options = $this->get_country_options();
-
+        if($country_options==null) {
+            return '';
+        }
         /**
          * Search for the "any" country value and move it to the end of the list.
          */
