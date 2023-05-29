@@ -237,7 +237,7 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
     {
         $billing_country='';
 
-        if (isset(WC()->checkout) && WC()->checkout instanceof WC_Checkout) {
+        if (WC()->checkout instanceof WC_Checkout) {
           
             $billing_country = WC()->checkout->get_value('billing_country');
             $billing_country = empty($billing_country) ? WC()->countries->get_base_country() : $billing_country;
