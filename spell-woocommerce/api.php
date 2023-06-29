@@ -1,6 +1,6 @@
 <?php
 
-define('SPELL_MODULE_VERSION', 'v1.4.1');
+define('SPELL_MODULE_VERSION', 'v1.4.2');
 define("ROOT_URL", "https://portal.klix.app");
 
 class SpellAPI
@@ -19,13 +19,39 @@ class SpellAPI
         return $this->call('POST', '/purchases/', $params);
     }
 
+    public function isRequestTheSame($new,$old)
+    {
+        return $new['language'] == $old['language'] and $new['currency'] == $old['currency'];
+    }
+
+    public function hidePayLater($payment_methods,$amount)
+    {
+        $shared_settings = new WC_Spell_Gateway_Payment_Settings();
+
+        if($shared_settings->get_option('hide_pay_later')=='yes' and $shared_settings->get_option('hide_pay_later_amount')*100>$amount) 
+        {
+            if(isset($payment_methods['by_country']['any']))
+            {
+                if (($key = array_search('klix_pay_later', $payment_methods['by_country']['any'])) !== false) {
+                    unset($payment_methods['by_country']['any'][$key]);
+                }
+            }
+        }
+        return $payment_methods;
+    }
+
     public function payment_methods($currency, $language,$amount)
     {
+        //get payment methods from cache
         $payment_methods=get_transient('spell-payment-methods');
-        
-        if($payment_methods){
+
+        $current_request=['currency'=>$currency,'language'=>$language,'amount'=>$amount];
+        $previous_request=get_transient('spell-payment-method-request');
+
+        if($payment_methods and $this->isRequestTheSame($current_request,$previous_request)) {
             $this->log_info("payment methods received from cache");
-            return get_transient('spell-payment-methods');
+            $payment_methods=$this->hidePayLater($payment_methods,$amount);
+            return $payment_methods;
         }
 
         $this->log_info("fetching payment methods");
@@ -35,9 +61,13 @@ class SpellAPI
             "/payment_methods/?brand_id={$this->brand_id}&currency={$currency}&language={$language}&amount={$amount}"
         );
 
+
         if($payment_methods!=null) {
             set_transient('spell-payment-methods',$payment_methods,300);
+            set_transient('spell-payment-method-request',$current_request,300);
         }
+
+        $payment_methods=$this->hidePayLater($payment_methods,$amount);
        
         return $payment_methods;
     }

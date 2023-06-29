@@ -15,27 +15,6 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
                 'description' => '',
                 'default' => 'no',
             ),
-            'hid' => array(
-                'title' => __('Enable payment method selection', 'woocommerce'),
-                'label' => __('Enable payment method selection', 'woocommerce'),
-                'type' => 'checkbox',
-                'description' => 'If set, buyers will be able to choose the desired payment method directly in WooCommerce',
-                'default' => 'yes',
-
-            ),
-            'method_desc' => array(
-                'title' => __('Change payment method description', 'woocommerce'),
-                'label' => __('', 'woocommerce'),
-                'type' => 'text',
-                'description' => 'If not set, "Choose payment method on next page" will be used',
-                'default' => 'Choose payment method on next page',
-            ),
-            'label' => array(
-                'title' => __('Change payment method title', 'woocommerce'),
-                'type' => 'text',
-                'description' => 'If not set, "Select payment method" will be used. Ignored if payment method selection is enabled',
-                'default' => 'Select Payment Method',
-            ),
             'brand-id' => array(
                 'title' => __('Brand ID', 'woocommerce-spell'),
                 'type' => 'text',
@@ -68,6 +47,115 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
                 'default' => 'processing',
             ),
 
+            
+            array(
+                'title' => __('Direct payment options', 'woocommerce'),
+                'type' => 'title',
+                'desc' => '',
+                'id' => 'direct_payment_options',
+            ),
+            'hid' => array(
+                'title' => __('Enable payment method selection', 'woocommerce'),
+                'label' => __('Enable payment method selection', 'woocommerce'),
+                'type' => 'checkbox',
+                'description' => 'If set, buyers will be able to choose the desired payment method directly in WooCommerce',
+                'default' => 'yes',
+            ),
+
+            'label' => array(
+                'title' => __('Change payment method title', 'woocommerce'),
+                'type' => 'text',
+                'description' => 'If not set, "Select payment method" will be used. Ignored if payment method selection is enabled',
+                'default' => 'Select Payment Method',
+            ),
+            'method_desc' => array(
+                'title' => __('Change payment method description', 'woocommerce'),
+                'label' => __('', 'woocommerce'),
+                'type' => 'text',
+                'description' => 'If not set, "Choose payment method on next page" will be used',
+                'default' => 'Choose payment method on next page',
+            ),
+            'hide_pay_later' => array(
+                'title' => __('Hide Pay Later payment option under specified amount', 'woocommerce'),
+                'label' => __('', 'woocommerce'),
+                'type' => 'checkbox',
+                'description' => 'If set, Pay Later payment method will be hidden under specified amount',
+                'default' => 'no'
+            ),
+            'hide_pay_later_amount' => array(
+                'title' => __('Minimal amount for Pay Later', 'woocommerce'),
+                'label' => __('', 'woocommerce'),
+                'type' => 'number',
+                'description' => '',
+                'default' => '50',
+                'min'=>0
+            ),
+            
+            'payment_methods_styles' => array(
+                'title' => __('Payment methods styles', 'woocommerce'),
+                'label' => __('', 'woocommerce'),
+                'type' => 'textarea',
+                'description' => '',
+                'default' => 'li.payment_method_bank_transfer .spell-pm-image img {
+                    margin-left: 0px !important;
+                    margin-top: 25px !important;
+                }
+                
+                #payment .payment_methods li img {
+                    max-height: none !important;
+                    height: 28px !IMPORTANT;
+                    width: auto !important;
+                    float:left !important;
+                }
+                
+                li.payment_method_klix img,
+                li.payment_method_bank_transfer img,
+                li.payment_method_klix_pay_later img,
+                li.payment_method_klix_card img {
+                    max-width: 200px !important;
+                    height: 41px !important;
+                    max-height: 41px !important;
+                    display: block;
+                    margin: 10px 0;
+                    float: none !important;
+                }
+                
+                li.payment_method_klix:nth-child(1),
+                li.payment_method_bank_transfer:nth-child(1),
+                li.payment_method_klix_pay_later:nth-child(1),
+                li.payment_method_klix_card:nth-child(1) {
+                    margin-top: 20px !important;
+                }
+                
+                li.payment_method_bank_transfer .spell--pm-wrapper {
+                    display: flex;
+                    align-items: center;
+                }
+                
+                li.payment_method_bank_transfer .spell--pm-wrapper span {
+                    margin-left: 15px;
+                }
+                
+                li.payment_method_bank_transfer &gt; label &gt; img {
+                    display: none !important;
+                }
+                
+                @media (min-width: 768px) {
+                    
+                    li.payment_method_bank_transfer .spell-pm-image img {
+                        width: 100px;
+                        height: auto;
+                    }
+                }
+                @media (max-width: 767px) {
+                    li.payment_method_bank_transfer .spell-pm-image img {
+                        width: 100px !important;
+                        height: 30px !important;
+                        margin-left: 15px !important;
+                    }
+                }',
+                'css' => 'height:150px;'
+            ),
             'debug' => array(
                 'title' => __('Debug Log', 'woocommerce'),
                 'type' => 'checkbox',
@@ -81,60 +169,6 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
                         ),
                         wc_get_log_file_path('spell')
                     ),
-            ),
-            array(
-                'title' => __('Direct payment options', 'woocommerce'),
-                'type' => 'title',
-                'desc' => '',
-                'id' => 'direct_payment_options',
-            ),
-            'direct_payment_enabled' => array(
-                'title' => __('Enable Directed Payment', 'woocommerce'),
-                'label' => __('Enable Directed Payment', 'woocommerce'),
-                'type' => 'checkbox',
-                'description' => 'If set, buyers will be able to directly purchase products from the product/cart page',
-                'default' => 'no',
-                'checkboxgroup' => 'start',
-                'show_if_checked' => 'option',
-            ),
-            'direct_payment_text' => array(
-                'title' => __('Direct payment button text', 'woocommerce'),
-                'label' => __('', 'woocommerce'),
-                'type' => 'text',
-                'description' => '',
-                'default' => 'Express checkout',
-                'checkboxgroup' => '',
-                'show_if_checked' => 'yes',
-            ),
-            'direct_payment_styles_pdp' => array(
-                'title' => __('Direct payment button styles in product page', 'woocommerce'),
-                'label' => __('', 'woocommerce'),
-                'type' => 'textarea',
-                'description' => '',
-                'default' => '',
-                'css' => 'height:150px;',
-                'checkboxgroup' => '',
-                'show_if_checked' => 'yes',
-            ),
-            'direct_payment_styles_cart' => array(
-                'title' => __('Direct payment button styles in cart', 'woocommerce'),
-                'label' => __('', 'woocommerce'),
-                'type' => 'textarea',
-                'description' => '',
-                'default' => '',
-                'css' => 'height:150px;',
-                'checkboxgroup' => '',
-                'show_if_checked' => 'yes',
-            ),
-            'direct_payment_styles_checkout' => array(
-                'title' => __('Direct payment button styles in checkout', 'woocommerce'),
-                'label' => __('', 'woocommerce'),
-                'type' => 'textarea',
-                'description' => '',
-                'default' => '',
-                'css' => 'height:150px;',
-                'checkboxgroup' => 'end',
-                'show_if_checked' => 'yes',
             ),
         );
     }

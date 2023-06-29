@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.4.1
+ * Version: 1.4.2
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -35,6 +35,7 @@ class WC_Spell
         add_action('init', array($this, 'wc_session_enabler'), 25);
         add_action('wp_enqueue_scripts', array($this, 'wc_spell_load_css'));
         add_action('plugins_loaded', 'wc_spell_payment_gateway_init');
+        add_action('wp_head', 'add_payment_methods_styles');
     }
 
     public function include_template_functions()
@@ -134,7 +135,6 @@ function wc_spell_payment_gateway_init()
             
             if($woocommerce->cart!=null){
                 $amount=floatval( preg_replace( '#[^\d.]#', '', $woocommerce->cart->get_cart_total() ) );
-                $amount=$amount*100;
             }
 
             $payment_methods = $spell_api->spell_api()->payment_methods(
@@ -238,7 +238,6 @@ function wc_spell_payment_gateway_init()
 
             if($woocommerce->cart!=null){
                 $amount=floatval( preg_replace( '#[^\d.]#', '', $woocommerce->cart->get_cart_total() ) );
-                $amount=$amount*100;
             }
             
 
@@ -289,6 +288,15 @@ function wc_spell_payment_gateway_init()
             $array = array_merge($array, $array_to_insert, $second_array);
         }
         return $array;
+    }
+    function add_payment_methods_styles()
+    {
+        if (is_checkout()) {
+            $shared_settings = new WC_Spell_Gateway_Payment_Settings();
+            echo '<style>';
+            echo $shared_settings->get_option('payment_methods_styles');
+            echo '</style>';
+        }
     }
 
     add_filter('woocommerce_available_payment_gateways', 'disable_spell_on_the_frontend');
