@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.4.2
+ * Version: 1.4.3
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -130,11 +130,11 @@ function wc_spell_payment_gateway_init()
         }
 
         if ($shared_settings->get_option('hid') === 'yes') {
-            global $woocommerce;
-            $amount=7001;
+
+            $amount=5001;
             
-            if($woocommerce->cart!=null){
-                $amount=floatval( preg_replace( '#[^\d.]#', '', $woocommerce->cart->get_cart_total() ) );
+            if (isset(WC()->cart) && isset(WC()->cart->total)) {
+                $amount = WC()->cart->total*100;
             }
 
             $payment_methods = $spell_api->spell_api()->payment_methods(
@@ -233,13 +233,12 @@ function wc_spell_payment_gateway_init()
         }
 
         if ($shared_settings->get_option('hid') === 'yes') {
-            global $woocommerce;
-            $amount=7001;
 
-            if($woocommerce->cart!=null){
-                $amount=floatval( preg_replace( '#[^\d.]#', '', $woocommerce->cart->get_cart_total() ) );
+            $amount=5001;
+
+            if (isset(WC()->cart) && isset(WC()->cart->total)) {
+                $amount = WC()->cart->total*100;
             }
-            
 
             $payment_methods = $spell_api->spell_api()->payment_methods(
                 get_woocommerce_currency(),
