@@ -96,64 +96,62 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
                 'label' => __('', 'woocommerce'),
                 'type' => 'textarea',
                 'description' => '',
-                'default' => 'li.payment_method_bank_transfer .spell-pm-image img {
-                    margin-left: 0px !important;
-                    margin-top: 25px !important;
-                }
-                
-                #payment .payment_methods li img {
-                    max-height: none !important;
-                    height: 28px !IMPORTANT;
-                    width: auto !important;
-                    float:left !important;
-                }
-                
-                li.payment_method_klix img,
-                li.payment_method_bank_transfer img,
-                li.payment_method_klix_pay_later img,
-                li.payment_method_klix_card img {
-                    max-width: 200px !important;
-                    height: 41px !important;
-                    max-height: 41px !important;
-                    display: block;
-                    margin: 10px 0;
-                    float: none !important;
-                }
-                
-                li.payment_method_klix:nth-child(1),
-                li.payment_method_bank_transfer:nth-child(1),
-                li.payment_method_klix_pay_later:nth-child(1),
-                li.payment_method_klix_card:nth-child(1) {
-                    margin-top: 20px !important;
-                }
-                
-                li.payment_method_bank_transfer .spell--pm-wrapper {
-                    display: flex;
-                    align-items: center;
-                }
-                
-                li.payment_method_bank_transfer .spell--pm-wrapper span {
-                    margin-left: 15px;
-                }
-                
-                li.payment_method_bank_transfer &gt; label &gt; img {
-                    display: none !important;
-                }
-                
-                @media (min-width: 768px) {
-                    
-                    li.payment_method_bank_transfer .spell-pm-image img {
-                        width: 100px;
-                        height: auto;
-                    }
-                }
-                @media (max-width: 767px) {
-                    li.payment_method_bank_transfer .spell-pm-image img {
-                        width: 100px !important;
-                        height: 30px !important;
-                        margin-left: 15px !important;
-                    }
-                }',
+                'default' => '
+                /* Common styles for various payment methods */
+li.payment_method_bank_transfer .spell-pm-image img {
+    margin-left: 0 !important;
+    margin-top: 25px !important;
+    max-height: none !important;
+    height: 28px !important;
+    width: auto !important;
+    float: left !important;
+}
+
+li.payment_method_klix img,
+li.payment_method_bank_transfer img,
+li.payment_method_klix_pay_later img,
+li.payment_method_klix_card img {
+    max-height: 41px !important;
+    display: block;
+    float: right !important;
+}
+
+li.payment_method_klix:nth-child(1),
+li.payment_method_bank_transfer:nth-child(1),
+li.payment_method_klix_pay_later:nth-child(1),
+li.payment_method_klix_card:nth-child(1) {
+    margin-top: 20px !important;
+}
+
+li.payment_method_bank_transfer .spell--pm-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+li.payment_method_bank_transfer .spell--pm-wrapper span {
+    margin-left: 15px;
+}
+
+@media (min-width: 768px) {
+    li.payment_method_bank_transfer .spell-pm-image img {
+ 
+        height: auto;
+    }
+}
+
+@media (max-width: 767px) {
+    li.payment_method_bank_transfer .spell-pm-image img {
+     
+        height: 30px !important;
+        margin-left: 15px !important;
+    }
+}
+
+/* Hide images under #wc-payment for bank transfer method */
+#wc-payment .wc_payment_method_bank_transfer label img {
+    display: none !important;
+}
+                ',
                 'css' => 'height:150px;'
             ),
             'debug' => array(
