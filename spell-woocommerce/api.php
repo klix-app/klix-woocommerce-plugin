@@ -1,6 +1,6 @@
 <?php
 
-define('SPELL_MODULE_VERSION', 'v1.4.3');
+define('SPELL_MODULE_VERSION', 'v1.4.4');
 define("ROOT_URL", "https://portal.klix.app");
 
 class SpellAPI
@@ -28,12 +28,20 @@ class SpellAPI
     {
         $shared_settings = new WC_Spell_Gateway_Payment_Settings();
 
-        if($shared_settings->get_option('hide_pay_later')=='yes' and $shared_settings->get_option('hide_pay_later_amount')*100>$amount) 
+        if($shared_settings->get_option('hide_pay_later')=='yes' 
+        and $shared_settings->get_option('hide_pay_later_amount')!=='' 
+        and floatval($shared_settings->get_option('hide_pay_later_amount'))*100>$amount) 
         {
-            if(isset($payment_methods['by_country']['any']))
+            $pay_later_terminals=[
+                "any"=>"klix_pay_later",
+                "LV"=>"klix_pay_later_lv",
+                "LT"=>"klix_pay_later_lt",
+                "EE"=>"klix_pay_later_ee"
+            ];
+            foreach($pay_later_terminals as $country =>$terminal_name)
             {
-                if (($key = array_search('klix_pay_later', $payment_methods['by_country']['any'])) !== false) {
-                    unset($payment_methods['by_country']['any'][$key]);
+                if (isset($payment_methods['by_country'][$country]) and ($key = array_search($terminal_name, $payment_methods['by_country'][$country])) !== false) {
+                    unset($payment_methods['by_country'][$country][$key]);
                 }
             }
         }

@@ -46,14 +46,6 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
                 ],
                 'default' => 'processing',
             ),
-
-            
-            array(
-                'title' => __('Direct payment options', 'woocommerce'),
-                'type' => 'title',
-                'desc' => '',
-                'id' => 'direct_payment_options',
-            ),
             'hid' => array(
                 'title' => __('Enable payment method selection', 'woocommerce'),
                 'label' => __('Enable payment method selection', 'woocommerce'),
