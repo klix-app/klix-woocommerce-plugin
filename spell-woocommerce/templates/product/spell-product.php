@@ -6,7 +6,7 @@ require_once dirname(__FILE__) . '/../../spell-woocommerce.php';
 
 
 add_action('wp_head', 'add_pay_later_widget_script_to_head');
-add_action('woocommerce_after_add_to_cart_button', 'add_pay_later_widget_in_product');
+add_action('woocommerce_after_add_to_cart_form', 'add_pay_later_widget_in_product');
 
 class Pay_Later_Widget_Spell
 {
