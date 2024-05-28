@@ -7,6 +7,8 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
 {
     public function get_form_fields()
     {
+        $log_handler = new WC_Log_Handler_File();
+        $log_file_path = $log_handler->get_log_file_path('spell');
         return array(
             'enabled' => array(
                 'title' => __('Enable API', 'woocommerce'),
@@ -157,7 +159,7 @@ li.payment_method_bank_transfer .spell--pm-wrapper span {
                             'Log events to <code>%s</code>',
                             'woocommerce'
                         ),
-                        wc_get_log_file_path('spell')
+                        $log_file_path
                     ),
             ),
         );
