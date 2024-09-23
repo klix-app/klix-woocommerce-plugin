@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.4.7
+ * Version: 1.5.0
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -206,8 +206,8 @@ function wc_spell_payment_gateway_init()
     function wp_add_spell_setting_link($links)
     {
         $url = get_admin_url()
-            . '/admin.php?page=wc-settings&tab=checkout&section=spell';
-        $settings_link = '<a href="' . $url . '">' . __('Settings', 'spell')
+            . '/admin.php?page=wc-settings&tab=checkout&section=klix';
+        $settings_link = '<a href="' . $url . '">' . __('Settings', 'klix')
             . '</a>';
         array_unshift($links, $settings_link);
         return $links;
@@ -278,9 +278,24 @@ function wc_spell_payment_gateway_init()
                 }
             }
         }
+        unset($available_gateways['klix']);
             
 
         return $available_gateways;
+    }
+    add_action( 'woocommerce_blocks_loaded', 'spell_register_order_approval_payment_method_type' );
+    function spell_register_order_approval_payment_method_type() {
+        if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+            return;
+        }
+        require_once plugin_dir_path(__FILE__) . 'spell-block.php';
+        add_action(
+            'woocommerce_blocks_payment_method_type_registration',
+            function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+                
+                $payment_method_registry->register( new Klix_Gateway_Blocks );
+            }
+        );
     }
 
     function array_splice_after_key($array, $key, $array_to_insert)

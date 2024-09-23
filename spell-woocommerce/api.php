@@ -1,6 +1,6 @@
 <?php
 
-define('SPELL_MODULE_VERSION', 'v1.4.7');
+define('SPELL_MODULE_VERSION', 'v1.5.0');
 define("ROOT_URL", "https://portal.klix.app");
 
 class SpellAPI

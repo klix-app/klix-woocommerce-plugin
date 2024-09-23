@@ -2,8 +2,8 @@
 
 abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
 {
-    public $id = "spell";
-    public $title = "";
+    public $id = "klix";
+    public $title = "Klix";
     public $method_title = "Klix E-commerce Gateway";
     public $description = " ";
     public $method_description = "";
@@ -54,7 +54,7 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         };
 
         add_action(
-            'woocommerce_update_options_payment_gateways_' . $this->id,
+            'woocommerce_update_options_payment_gateways_klix',
             array($this, 'process_admin_options')
         );
         str_replace(
@@ -64,7 +64,7 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         );
 
         add_action(
-            'woocommerce_api_wc_gateway_spell',
+            'woocommerce_api_wc_gateway_klix',
             array($this, 'handle_callback')
         );
     }
@@ -84,20 +84,11 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         $this->spell_api()->log_info($msg . ': ' . $o->get_order_number());
     }
 
-    public function handle_callback()
+    private function retrieve_payment_id($order_id)
     {
-
-        $GLOBALS['wpdb']->get_results(
-            "SELECT GET_LOCK('spell_payment', 15);"
-        );
-        global $woocommerce;
-        $this->spell_api()->log_info('received callback: ' . print_r($_GET, true));
-        $o = new WC_Order($_GET["id"]);
-        $this->log_order_info('received success callback', $o);
         $payment_id = WC()->session->get(
-            'spell_payment_id_' . $_GET["id"]
+            'spell_payment_id_' . $order_id
         );
-        $payment_redirect = $this->get_return_url($o);
         if (!$payment_id) {
             $input = json_decode(file_get_contents('php://input'), true);
             if($input !== null) {
@@ -105,17 +96,51 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
             }
         }
         
+        return $payment_id;
+    }
+
+    private function confirm_order($o,$purchase)
+    {
+        if (!$o->is_paid()) {
+            $payment_methods=get_transient('spell-payment-methods');
+            $payment_method_name=$payment_methods['names'][$purchase['transaction_data']['payment_method']];
+            $o->payment_complete($purchase['id']);
+            $o->set_payment_method_title($payment_method_name);
+            $o->save();
+            $o->add_order_note(
+                sprintf(__('Payment Successful. Transaction ID: %s', 'woocommerce'), $purchase['id'])
+            );
+        }
+        WC()->cart->empty_cart();
+        $this->log_order_info('payment processed', $o);
+    }
+
+    public function handle_callback()
+    {
+        $this->spell_api()->log_info('received callback: ' . print_r($_GET, true));
+        $GLOBALS['wpdb']->get_results(
+            "SELECT GET_LOCK('spell_payment', 15);"
+        );
+
+        global $woocommerce;
+        
+        $o = wc_get_order($_GET["id"]);
+
+        if($o===false)
+        {
+            wp_redirect(wc_get_page_permalink('shop'));
+            return;
+        }
+
+        $payment_redirect = $this->get_return_url($o);
+        $payment_id=$this->retrieve_payment_id($_GET['id']);
+        
         if ($payment_id !== "") {
-            if ($this->spell_api()->was_payment_successful($payment_id)) {
-                if (!$o->is_paid()) {
-                    $o->payment_complete($payment_id);
-                    $o->add_order_note(
-                        sprintf(__('Payment Successful. Transaction ID: %s', 'woocommerce'), $payment_id)
-                    );
-                }
-                WC()->cart->empty_cart();
-                $this->log_order_info('payment processed', $o);
-            } else {
+            $purchase=$this->spell_api()->get_payment($payment_id);
+            if ($purchase && $purchase['status'] == 'paid') {
+                $this->confirm_order($o,$purchase);
+            } 
+            else {
                 if ($o->get_status() === "pending") {
                     $o->update_status(
                         'wc-failed',
@@ -123,8 +148,7 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
                     );
                     $this->log_order_info('payment not successful', $o);
                 }
-                $cancel_redirect = $woocommerce->cart->get_cart_url();
-                $payment_redirect = $cancel_redirect;
+                $payment_redirect = $woocommerce->cart->get_cart_url();
             }
         }
         
@@ -132,7 +156,6 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         $GLOBALS['wpdb']->get_results(
             "SELECT RELEASE_LOCK('spell_payment');"
         );
-
         if($_SERVER['REQUEST_METHOD'] == 'GET') {
             header("Location: " . $payment_redirect);
         }
@@ -177,7 +200,7 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         $this->payment_helper->normalize_request($o);
         $total = round($o->calculate_totals() * 100);
         $spell = $this->spell_api();
-        $u = home_url() . '/?wc-api=wc_gateway_spell&id=' . $o_id;
+        $u = home_url() . '/?wc-api=wc_gateway_klix&id=' . $o_id;
 
         $params = [
             'success_callback' => $u . "&action=paid",
