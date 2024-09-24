@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.5.0
+ * Version: 1.5.1
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -172,6 +172,30 @@ function wc_spell_payment_gateway_init()
         return $methods;
     }
 
+    function add_payment_methods($array, $array_to_insert) {
+        
+        $position = array_search('klix', array_keys($array));
+        
+        if ($position !== false) {
+            
+            $array = array_merge(
+                array_slice($array, 0, $position + 1, true),
+                $array_to_insert,
+                array_slice($array, $position + 1, null, true)
+            );
+            
+
+            $new_index = 0;
+            foreach ($array as $key => &$value) {
+                $value = $new_index++;
+            }
+    
+            return $array;
+        }
+    
+        return $array;
+    }
+
     /**
 	 * By default, new payment gateways are put at the bottom of the list on the admin "Payments" settings screen.
 	 *
@@ -180,21 +204,11 @@ function wc_spell_payment_gateway_init()
 	 * @return array Modified ordering.
 	 */
 	function set_gateway_in_sorting_list( $ordering ) {
+        
 		$ordering                   = (array) $ordering;
 
-        if ( isset($ordering['spell']) ) {
-            $ordering['klix']           = $ordering['spell'];
-            $ordering['bank_transfer']  = $ordering['spell'];
-            $ordering['klix_card']      = $ordering['spell'];
-            $ordering['klix_pay_later'] = $ordering['spell'];
-        }
-
-        asort( $ordering );
-        $i = 0;
-        foreach ( $ordering as $key => $order ) {
-            $ordering[ $key ] = $i;
-            $i++;
-        }
+        $ordering = add_payment_methods($ordering, ['bank_transfer'=>0,'klix_card'=>0,'klix_pay_later'=>0]);
+        
 
 		return $ordering;
 	}
@@ -279,7 +293,6 @@ function wc_spell_payment_gateway_init()
             }
         }
         unset($available_gateways['klix']);
-            
 
         return $available_gateways;
     }
