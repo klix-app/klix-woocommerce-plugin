@@ -158,13 +158,22 @@ class WC_Spell_Gateway_Payment_Helper
         $key_to_find = 'spell-payment-method-';
         $selected_payment_method = $key_to_find . $payment_method;
 
-        foreach ($_REQUEST as $key => $value) {
+        if (!isset($_REQUEST[$selected_payment_method])) {
+            return;
+        }
+        $filtered_request = $_REQUEST;
+
+        foreach ($filtered_request as $key => $value) {
             if (preg_match("/^{$key_to_find}/", $key) && $key !== $selected_payment_method) {
-                unset($_REQUEST[$key]);
+                unset($filtered_request[$key]);
             }
         }
 
-        $_REQUEST['spell-payment-method'] = $_REQUEST[$selected_payment_method];
-        unset($_REQUEST[$selected_payment_method]);
+        if (isset($filtered_request[$selected_payment_method])) {
+            $filtered_request['spell-payment-method'] = $filtered_request[$selected_payment_method];
+            unset($filtered_request[$selected_payment_method]);
+        }
+
+        $_REQUEST = $filtered_request;
     }
 }

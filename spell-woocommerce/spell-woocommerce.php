@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.5.1
+ * Version: 1.5.2
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -24,6 +24,7 @@
 // docs http://docs.woothemes.com/document/payment-gateway-api/
 
 require_once dirname(__FILE__) . '/api.php';
+use Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils;
 
 class WC_Spell
 {
@@ -292,10 +293,35 @@ function wc_spell_payment_gateway_init()
                 }
             }
         }
-        unset($available_gateways['klix']);
+    
+        
+        if ( ! klix_is_blocks_checkout() ) {
+            unset($available_gateways['klix']);
+        }
 
         return $available_gateways;
     }
+
+    function klix_is_blocks_checkout() {
+        if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+            return false;
+        }
+
+        if ( class_exists( '\Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils' ) 
+            && method_exists( '\Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils', 'is_checkout_block_in_use' ) ) {
+            return \Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::is_checkout_block_in_use();
+        }
+
+        if ( function_exists( 'has_block' ) ) {
+            global $post;
+            if ( isset( $post->post_content ) && has_block( 'woocommerce/checkout', $post->post_content ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     add_action( 'woocommerce_blocks_loaded', 'spell_register_order_approval_payment_method_type' );
     function spell_register_order_approval_payment_method_type() {
         if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
