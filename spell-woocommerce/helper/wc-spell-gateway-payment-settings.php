@@ -5,7 +5,7 @@
  */
 class WC_Spell_Gateway_Payment_Settings extends WC_Settings_API
 {
-    public $id = 'klix';
+    public $id = 'klix-payments';
 
     /**
      * @return array

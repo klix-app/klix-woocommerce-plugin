@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.5.2
+ * Version: 1.5.3
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -155,7 +155,7 @@ function wc_spell_payment_gateway_init()
                 $GLOBALS['spell_payment_groups'] = $payment_groups;
     
                 $payment_groups_map = [
-                    'klix' => WC_Spell_Gateway_Klix::class,
+                    'klix-payments' => WC_Spell_Gateway_Klix::class,
                     'klix_pay_later' => WC_Spell_Gateway_Klix_Pay_Later::class,
                     'klix_card' => WC_Spell_Gateway_Klix_Card::class,
                     'bank_transfer' => WC_Spell_Gateway_Bank_Transfer::class,
@@ -175,7 +175,7 @@ function wc_spell_payment_gateway_init()
 
     function add_payment_methods($array, $array_to_insert) {
         
-        $position = array_search('klix', array_keys($array));
+        $position = array_search('klix-payments', array_keys($array));
         
         if ($position !== false) {
             
@@ -221,8 +221,8 @@ function wc_spell_payment_gateway_init()
     function wp_add_spell_setting_link($links)
     {
         $url = get_admin_url()
-            . '/admin.php?page=wc-settings&tab=checkout&section=klix';
-        $settings_link = '<a href="' . $url . '">' . __('Settings', 'klix')
+            . '/admin.php?page=wc-settings&tab=checkout&section=klix-payments';
+        $settings_link = '<a href="' . $url . '">' . __('Settings', 'klix-payments')
             . '</a>';
         array_unshift($links, $settings_link);
         return $links;
@@ -273,12 +273,12 @@ function wc_spell_payment_gateway_init()
                 $GLOBALS['spell_payment_groups'] = $payment_groups;
     
                 $payment_groups_map = [
-                    'klix' => WC_Spell_Gateway_Klix::class,
+                    'klix-payments' => WC_Spell_Gateway_Klix::class,
                     'bank_transfer' => WC_Spell_Gateway_Bank_Transfer::class,
                     'klix_card' => WC_Spell_Gateway_Klix_Card::class,
                     'klix_pay_later' => WC_Spell_Gateway_Klix_Pay_Later::class,
                 ];
-    
+
                 $klix_available_gateways=[];
                 foreach ($payment_groups as $payment_group) {
                     if (array_key_exists($payment_group['id'], $payment_groups_map)) {
@@ -286,17 +286,18 @@ function wc_spell_payment_gateway_init()
                     }
                 }
                 if($available_gateways !=null and $klix_available_gateways!=null and count($klix_available_gateways)>0) {
-                    $available_gateways = array_splice_after_key($available_gateways,'spell',$klix_available_gateways);
+                    $available_gateways = array_splice_after_key($available_gateways,'klix-payments',$klix_available_gateways);
                 }
-                if (isset($available_gateways['spell'])) {
-                    unset($available_gateways['spell']);
+
+                if (isset($available_gateways['klix-payments'])) {
+                    unset($available_gateways['klix-payments']);
                 }
             }
         }
     
         
         if ( ! klix_is_blocks_checkout() ) {
-            unset($available_gateways['klix']);
+            unset($available_gateways['klix-payments']);
         }
 
         return $available_gateways;

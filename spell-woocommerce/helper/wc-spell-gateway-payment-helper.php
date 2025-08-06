@@ -143,7 +143,7 @@ class WC_Spell_Gateway_Payment_Helper
     {
         $payment_method = $o->get_payment_method();
 
-        if ($payment_method !== 'spell') {
+        if ($payment_method !== 'klix-payments') {
             $this->sanitize_spell_payment_methods($payment_method);
         }
     }

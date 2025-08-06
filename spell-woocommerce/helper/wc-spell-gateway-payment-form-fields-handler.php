@@ -8,39 +8,39 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
     public function get_form_fields()
     {
         $log_handler = new WC_Log_Handler_File();
-        $log_file_path = $log_handler->get_log_file_path('klix');
+        $log_file_path = $log_handler->get_log_file_path('klix-payments');
         return array(
             'enabled' => array(
-                'title' => __('Enable API', 'klix'),
-                'label' => __('Enable API', 'klix'),
+                'title' => __('Enable API', 'klix-payments'),
+                'label' => __('Enable API', 'klix-payments'),
                 'type' => 'checkbox',
                 'description' => '',
                 'default' => 'no',
             ),
             'brand-id' => array(
-                'title' => __('Brand ID', 'klix'),
+                'title' => __('Brand ID', 'klix-payments'),
                 'type' => 'text',
                 'description' => __(
                     'Please enter your brand ID',
-                    'klix'
+                    'klix-payments'
                 ),
                 'default' => '',
             ),
             'private-key' => array(
-                'title' => __('Secret key', 'klix'),
+                'title' => __('Secret key', 'klix-payments'),
                 'type' => 'text',
                 'description' => __(
                     'Please enter your secret key',
-                    'klix'
+                    'klix-payments'
                 ),
                 'default' => '',
             ),
             'order-status-after-payment' => array(
-                'title' => __('Order status', 'klix'),
+                'title' => __('Order status', 'klix-payments'),
                 'type' => 'select',
                 'description' => __(
                     'Specify to which status, order should change after successful payment',
-                    'klix'
+                    'klix-payments'
                 ),
                 'options'=>[
                     'processing'=>'Processing',
@@ -49,36 +49,36 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
                 'default' => 'processing',
             ),
             'hid' => array(
-                'title' => __('Enable payment method selection', 'klix'),
-                'label' => __('Enable payment method selection', 'klix'),
+                'title' => __('Enable payment method selection', 'klix-payments'),
+                'label' => __('Enable payment method selection', 'klix-payments'),
                 'type' => 'checkbox',
                 'description' => 'If set, buyers will be able to choose the desired payment method directly in WooCommerce',
                 'default' => 'yes',
             ),
 
             'label' => array(
-                'title' => __('Change payment method title', 'klix'),
+                'title' => __('Change payment method title', 'klix-payments'),
                 'type' => 'text',
                 'description' => 'If not set, "Select payment method" will be used. Ignored if payment method selection is enabled',
                 'default' => 'Select Payment Method',
             ),
             'method_desc' => array(
-                'title' => __('Change payment method description', 'klix'),
-                'label' => __('', 'klix'),
+                'title' => __('Change payment method description', 'klix-payments'),
+                'label' => __('', 'klix-payments'),
                 'type' => 'text',
                 'description' => 'If not set, "Choose payment method on next page" will be used',
                 'default' => 'Choose payment method on next page',
             ),
             'hide_pay_later' => array(
-                'title' => __('Hide Pay Later payment option under specified amount', 'klix'),
-                'label' => __('', 'klix'),
+                'title' => __('Hide Pay Later payment option under specified amount', 'klix-payments'),
+                'label' => __('', 'klix-payments'),
                 'type' => 'checkbox',
                 'description' => 'If set, Pay Later payment method will be hidden under specified amount',
                 'default' => 'no'
             ),
             'hide_pay_later_amount' => array(
-                'title' => __('Minimal amount for Pay Later', 'klix'),
-                'label' => __('', 'klix'),
+                'title' => __('Minimal amount for Pay Later', 'klix-payments'),
+                'label' => __('', 'klix-payments'),
                 'type' => 'number',
                 'description' => '',
                 'default' => '50',
@@ -86,8 +86,8 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
             ),
             
             'payment_methods_styles' => array(
-                'title' => __('Payment methods styles', 'klix'),
-                'label' => __('', 'klix'),
+                'title' => __('Payment methods styles', 'klix-payments'),
+                'label' => __('', 'klix-payments'),
                 'type' => 'textarea',
                 'description' => '',
                 'default' => '
@@ -149,9 +149,9 @@ li.payment_method_bank_transfer .spell--pm-wrapper span {
                 'css' => 'height:150px;'
             ),
             'debug' => array(
-                'title' => __('Debug Log', 'klix'),
+                'title' => __('Debug Log', 'klix-payments'),
                 'type' => 'checkbox',
-                'label' => __('Enable logging', 'klix'),
+                'label' => __('Enable logging', 'klix-payments'),
                 'default' => 'yes',
                 'description' =>
                     sprintf(

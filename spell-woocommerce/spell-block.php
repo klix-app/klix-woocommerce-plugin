@@ -5,10 +5,10 @@ use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodTyp
 final class Klix_Gateway_Blocks extends AbstractPaymentMethodType {
 
     private $gateway;
-    protected $name = 'klix';
+    protected $name = 'klix-payments';
 
     public function initialize() {
-        $this->settings = get_option( 'woocommerce_klix_settings', [] );
+        $this->settings = get_option( 'woocommerce_klix-payments_settings', [] );
     }
 
     public function is_active() {
@@ -44,8 +44,8 @@ final class Klix_Gateway_Blocks extends AbstractPaymentMethodType {
         $shared_settings = new WC_Spell_Gateway_Payment_Settings();
 
         return [
-            'title' => __($shared_settings->get_option('label'), 'klix'),
-            'description' => __($shared_settings->get_option('method_desc'), 'klix')
+            'title' => __($shared_settings->get_option('label'), 'klix-payments'),
+            'description' => __($shared_settings->get_option('method_desc'), 'klix-payments')
         ];
     }
 

@@ -2,7 +2,7 @@
 
 class WC_Spell_Logger
 {
-    const LOGGER_HANDLER = 'spell';
+    const LOGGER_HANDLER = 'klix-payments';
 
     /**
      * @var WC_Logger

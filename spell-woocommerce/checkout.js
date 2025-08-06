@@ -1,10 +1,10 @@
 const klix_settings = window.klixPaymentData || {};
-const label = window.wp.htmlEntities.decodeEntities(klix_settings.title) || window.wp.i18n.__('Klix', 'klix');
+const label = window.wp.htmlEntities.decodeEntities(klix_settings.title) || window.wp.i18n.__('Klix', 'klix-payments');
 const Content = () => {
     return window.wp.htmlEntities.decodeEntities(klix_settings.description || '');
 };
 const Block_Gateway = {
-    name: 'klix',
+    name: 'klix-payments',
     label: label,
     content: Object(window.wp.element.createElement)(Content, null),
     edit: Object(window.wp.element.createElement)(Content, null),

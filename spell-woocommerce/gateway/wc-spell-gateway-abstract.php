@@ -2,7 +2,7 @@
 
 abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
 {
-    public $id = "klix";
+    public $id = "klix-payments";
     public $title = "Klix";
     public $method_title = "Klix E-commerce Gateway";
     public $description = " ";
@@ -54,7 +54,7 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         };
 
         add_action(
-            'woocommerce_update_options_payment_gateways_klix',
+            'woocommerce_update_options_payment_gateways_klix-payments',
             array($this, 'process_admin_options')
         );
         str_replace(
