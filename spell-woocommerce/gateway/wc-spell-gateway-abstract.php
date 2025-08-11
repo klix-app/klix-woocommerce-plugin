@@ -43,6 +43,12 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         $this->title = $this->label;
         $this->method_description = $this->method_desc;
 
+        $this->supports[] = 'pay_for_order';
+        $this->supports[] = 'refunds';
+        $this->supports[] = 'tokenization';
+        $this->supports[] = 'add_payment_method';
+        $this->supports[] = 'wc_blocks_checkout';
+
         if ($this->title === '') {
             $ptitle = "Select Payment Method";
             $this->title = $ptitle;
@@ -254,8 +260,15 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         $this->log_order_info('got checkout url, redirecting', $o);
         $u = $payment['checkout_url'];
 
-        if (array_key_exists("spell-payment-method", $_REQUEST)) {
-            $u .= "?preferred=" . $_REQUEST["spell-payment-method"];
+        
+        $preferred = null;
+        if (isset($_REQUEST['spell-payment-method'])) {
+            $preferred = $_REQUEST['spell-payment-method'];
+        } elseif (isset($_POST['klix_selected_option']) and $_POST['klix_selected_option'] !== 'klix-payments') {
+            $preferred = $_POST['klix_selected_option'];
+        }
+        if ($preferred !== null) {
+            $u .= (strpos($u, '?') === false ? '?' : '&') . 'preferred=' . urlencode($preferred);
         }
 
         return array(

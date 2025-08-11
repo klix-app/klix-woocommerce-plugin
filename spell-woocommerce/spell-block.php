@@ -27,7 +27,7 @@ final class Klix_Gateway_Blocks extends AbstractPaymentMethodType {
                 'wp-html-entities',
                 'wp-i18n',
             ],
-            null,
+            '1.0.1',
             true
         );
         $payment_method_data = $this->get_payment_method_data();
@@ -42,14 +42,25 @@ final class Klix_Gateway_Blocks extends AbstractPaymentMethodType {
 
     public function get_payment_method_data() {
         $shared_settings = new WC_Spell_Gateway_Payment_Settings();
+        $spell_api = new WC_Spell_Gateway_Payment_Api();
+        $payment_helper = new WC_Spell_Gateway_Payment_Helper();
+        
+        $payment_methods = [];
+        if ($shared_settings->get_option('hid') === 'yes' && isset(WC()->cart->total)) {
+            $amount = WC()->cart->total*100;
+            $payment_methods = $spell_api->spell_api()->payment_methods(
+                get_woocommerce_currency(),
+                $payment_helper->get_language(),
+                $amount
+            );
+        }
 
-        return [
-            'title' => __($shared_settings->get_option('label'), 'klix-payments'),
-            'description' => __($shared_settings->get_option('method_desc'), 'klix-payments')
-        ];
-    }
-
-    
-
+    return [
+        'title' => __($shared_settings->get_option('label'), 'klix-payments'),
+        'description' => __($shared_settings->get_option('method_desc'), 'klix-payments'),
+        'supports' => [ 'products' ],
+        'payment_methods' => $payment_methods,
+    ];
+}
 }
 ?>

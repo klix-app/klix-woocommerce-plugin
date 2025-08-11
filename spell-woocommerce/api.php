@@ -1,6 +1,6 @@
 <?php
 
-define('SPELL_MODULE_VERSION', 'v1.5.3');
+define('SPELL_MODULE_VERSION', 'v1.6.0');
 define("ROOT_URL", "https://portal.klix.app");
 
 class SpellAPI
@@ -78,6 +78,30 @@ class SpellAPI
         $payment_methods=$this->hidePayLater($payment_methods,$amount);
        
         return $payment_methods;
+    }
+
+    public function structure_payment_methods($payment_methods)
+    {
+       $payment_groups_mapper = new WC_Spell_Gateway_Payment_Methods_Mapper($payment_methods);
+        $payment_groups = $payment_groups_mapper->get_payment_groups();
+        
+        $GLOBALS['spell_payment_groups'] = $payment_groups;
+
+        $payment_groups_map = [
+            'klix-payments' => WC_Spell_Gateway_Klix::class,
+            'bank_transfer' => WC_Spell_Gateway_Bank_Transfer::class,
+            'klix_card' => WC_Spell_Gateway_Klix_Card::class,
+            'klix_pay_later' => WC_Spell_Gateway_Klix_Pay_Later::class,
+        ];
+
+        $klix_available_gateways=[];
+        foreach ($payment_groups as $payment_group) {
+            
+            if (array_key_exists($payment_group['id'], $payment_groups_map)) {
+                $klix_available_gateways[$payment_group['id']] = new $payment_groups_map[$payment_group['id']];
+            }
+        }
+        return $klix_available_gateways;
     }
 
     public function was_payment_successful($payment_id)

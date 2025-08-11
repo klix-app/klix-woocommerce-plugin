@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.5.3
+ * Version: 1.6.0
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -267,39 +267,18 @@ function wc_spell_payment_gateway_init()
             );
 
             if(!is_null($payment_methods) and array_key_exists("by_country", $payment_methods)) {
+                $klix_available_gateways = $spell_api->spell_api()->structure_payment_methods($payment_methods);
                 
-                $payment_groups_mapper = new WC_Spell_Gateway_Payment_Methods_Mapper($payment_methods);
-                $payment_groups = $payment_groups_mapper->get_payment_groups();
-                $GLOBALS['spell_payment_groups'] = $payment_groups;
-    
-                $payment_groups_map = [
-                    'klix-payments' => WC_Spell_Gateway_Klix::class,
-                    'bank_transfer' => WC_Spell_Gateway_Bank_Transfer::class,
-                    'klix_card' => WC_Spell_Gateway_Klix_Card::class,
-                    'klix_pay_later' => WC_Spell_Gateway_Klix_Pay_Later::class,
-                ];
-
-                $klix_available_gateways=[];
-                foreach ($payment_groups as $payment_group) {
-                    if (array_key_exists($payment_group['id'], $payment_groups_map)) {
-                        $klix_available_gateways[$payment_group['id']] = new $payment_groups_map[$payment_group['id']];
-                    }
-                }
                 if($available_gateways !=null and $klix_available_gateways!=null and count($klix_available_gateways)>0) {
                     $available_gateways = array_splice_after_key($available_gateways,'klix-payments',$klix_available_gateways);
                 }
 
-                if (isset($available_gateways['klix-payments'])) {
+                if (isset($available_gateways['klix-payments']) and !klix_is_blocks_checkout()) {
                     unset($available_gateways['klix-payments']);
                 }
             }
         }
-    
-        
-        if ( ! klix_is_blocks_checkout() ) {
-            unset($available_gateways['klix-payments']);
-        }
-
+ 
         return $available_gateways;
     }
 
