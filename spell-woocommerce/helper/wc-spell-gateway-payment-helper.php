@@ -75,7 +75,7 @@ class WC_Spell_Gateway_Payment_Helper
     {
         $result = '';
         $result .= "<div style=\"display: flex; flex-flow: row wrap;\">";
-        $result .= $this->get_payment_methods_html($payment_group['id'], $payment_group['methods']);
+        $result .= $this->get_payment_methods_html($payment_group['id'], $payment_group['methods'],$payment_group['label']);
         $result .= "</div>";
 
         return $result;
@@ -85,13 +85,13 @@ class WC_Spell_Gateway_Payment_Helper
      * @param $payment_methods
      * @return string
      */
-    private function get_payment_methods_html($payment_group_id, $payment_methods)
+    private function get_payment_methods_html($payment_group_id, $payment_methods,$label)
     {
         $result = '';
 
     // Fieldset wrapper
     $result .= '<fieldset class="spell-payment-group" id="spell-payment-group-' . esc_attr( $payment_group_id ) . '">';
-    $result .= '<legend class="spell-payment-group__legend">' . esc_html__( 'Select a payment method', 'your-text-domain' ) . '</legend>';
+    $result .= '<legend class="spell-payment-group__legend">' . $label . '</legend>';
 
     if ( count( $payment_methods ) > 1 ) {
         $result .= '<div class="spell-payment-group__grid">';
