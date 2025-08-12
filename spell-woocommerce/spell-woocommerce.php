@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.6.2
+ * Version: 1.6.3
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -277,7 +277,7 @@ function wc_spell_payment_gateway_init()
                 }
                 if($shared_settings->get_option('block_based_checkout')=='yes') {
                     foreach ($available_gateways as $key => $gateway) {
-                        if ($key!='klix-payments') {
+                        if (in_array($key, ['klix_pay_later', 'klix_card', 'bank_transfer'])) {
                             unset($available_gateways[$key]);
                         }
                     }
