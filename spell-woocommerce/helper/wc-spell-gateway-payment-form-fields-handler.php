@@ -17,6 +17,13 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
                 'description' => '',
                 'default' => 'no',
             ),
+            'block_based_checkout' => array(
+                'title' => __('Enable Block-Based Checkout', 'klix-payments'),
+                'label' => __('Enable Block-Based Checkout', 'klix-payments'),
+                'type' => 'checkbox',
+                'description' => '',
+                'default' => 'no',
+            ),
             'brand-id' => array(
                 'title' => __('Brand ID', 'klix-payments'),
                 'type' => 'text',

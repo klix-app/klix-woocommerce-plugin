@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.6.1
+ * Version: 1.6.2
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -271,34 +271,21 @@ function wc_spell_payment_gateway_init()
                 if($available_gateways !=null and $klix_available_gateways!=null and count($klix_available_gateways)>0) {
                     $available_gateways = array_splice_after_key($available_gateways,'klix-payments',$klix_available_gateways);
                 }
-
-                if (isset($available_gateways['klix-payments']) and !klix_is_blocks_checkout()) {
+                
+                if (isset($available_gateways['klix-payments']) and $shared_settings->get_option('block_based_checkout')=='no') {
                     unset($available_gateways['klix-payments']);
+                }
+                if($shared_settings->get_option('block_based_checkout')=='yes') {
+                    foreach ($available_gateways as $key => $gateway) {
+                        if ($key!='klix-payments') {
+                            unset($available_gateways[$key]);
+                        }
+                    }
                 }
             }
         }
- 
+
         return $available_gateways;
-    }
-
-    function klix_is_blocks_checkout() {
-        if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
-            return false;
-        }
-
-        if ( class_exists( '\Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils' ) 
-            && method_exists( '\Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils', 'is_checkout_block_in_use' ) ) {
-            return \Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::is_checkout_block_in_use();
-        }
-
-        if ( function_exists( 'has_block' ) ) {
-            global $post;
-            if ( isset( $post->post_content ) && has_block( 'woocommerce/checkout', $post->post_content ) ) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     add_action( 'woocommerce_blocks_loaded', 'spell_register_order_approval_payment_method_type' );

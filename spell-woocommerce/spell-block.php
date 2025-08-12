@@ -58,7 +58,7 @@ final class Klix_Gateway_Blocks extends AbstractPaymentMethodType {
     return [
         'title' => __($shared_settings->get_option('label'), 'klix-payments'),
         'description' => __($shared_settings->get_option('method_desc'), 'klix-payments'),
-        'supports' => [ 'products' ],
+        'supports' => [ 'products','wc_blocks_checkout'],
         'payment_methods' => $payment_methods,
     ];
 }
