@@ -52,7 +52,6 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
         return [
             'id' => isset($payment_group['name']) ? $payment_group['name'] : '',
             'label' => isset($payment_group['label']) ? $payment_group['label'] : '',
-            'logo' => isset($payment_group['logo']) ? self::IMAGE_BASE_URL . $payment_group['logo'] : '',
             'methods' => $this->map_group_methods($payment_group['methods']),
         ];
     }

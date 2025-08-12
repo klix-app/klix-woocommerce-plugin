@@ -27,7 +27,6 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
 
     public function __construct()
     {
-        // TODO: Set icon. Probably can be an external URL.
         $this->init_form_fields();
         $this->init_settings();
 
@@ -37,7 +36,6 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
 
         $this->hid = $this->shared_settings->get_option('hid');
         $this->label = isset($this->global_mapping[$this->id]) ? $this->global_mapping[$this->id]['label'] : $this->shared_settings->get_option('label');
-        $this->icon = isset($this->global_mapping[$this->id]) ? $this->global_mapping[$this->id]['logo'] : null;
 
         $this->method_desc = $this->shared_settings->get_option('method_desc');
         $this->title = $this->label;

@@ -89,20 +89,39 @@ class WC_Spell_Gateway_Payment_Helper
     {
         $result = '';
 
-        if (count($payment_methods) > 1) {
-            foreach ($payment_methods as $index => $payment_method) {
-                $result .= "<label style=\"padding: 1em; width: 50%; \">";
-                $result .= "<div class=\"spell--pm-wrapper\"><input type=radio class=spell-payment-method name=spell-payment-method-{$payment_group_id} value=\"{$payment_method["id"]}\"";
-                $result .= ($index == 0 ? 'checked=checked' : '');
-                $result .= '>';
-                $result .= "<label style=\"font-size: 14px;\">{$payment_method['label']}</label></div>";
-                $result .= "<div class=\"spell-pm-image\"><img alt='{$payment_method['label']}' src='{$payment_method['logo']}'></div>";
-                $result .= '</label>';
+    // Fieldset wrapper
+    $result .= '<fieldset class="spell-payment-group" id="spell-payment-group-' . esc_attr( $payment_group_id ) . '">';
+    $result .= '<legend class="spell-payment-group__legend">' . esc_html__( 'Select a payment method', 'your-text-domain' ) . '</legend>';
+
+    if ( count( $payment_methods ) > 1 ) {
+        $result .= '<div class="spell-payment-group__grid">';
+        foreach ( $payment_methods as $index => $payment_method ) {
+            $method_id    = esc_attr( $payment_method['id'] );
+            $method_label = esc_html( $payment_method['label'] );
+            $method_logo  = esc_url( $payment_method['logo'] );
+
+            $input_id = "spell-payment-method-{$payment_group_id}-{$index}";
+
+            // Wrap entire clickable area inside a <label>
+            $result .= '<label class="spell-payment-group__item" for="' . esc_attr( $input_id ) . '">';
+            $result .= '<input type="radio" id="' . esc_attr( $input_id ) . '" class="spell-payment-method__input" name="spell-payment-method-' . esc_attr( $payment_group_id ) . '" value="' . $method_id . '" ' . ( $index === 0 ? 'checked="checked"' : '' ) . ' />';
+            $result .= '<span class="spell-payment-method__custom-radio"></span>';
+
+            if ( ! empty( $method_logo ) ) {
+                $result .= '<span class="spell-payment-method__logo"><img alt="' . $method_label . ' logo" src="' . $method_logo . '" /></span>';
             }
-        } else {
-            $result .= "<input type=hidden class=spell-payment-method name=spell-payment-method-{$payment_group_id} value=\"{$payment_methods[0]["id"]}\" />";
-            $result .= "<p>{$payment_methods[0]['label']}</p>";
+
+            $result .= '<span class="spell-payment-method__text">' . $method_label . '</span>';
+            $result .= '</label>';
         }
+        $result .= '</div>';
+    } else {
+        $single = $payment_methods[0];
+        $result .= '<input type="hidden" class="spell-payment-method" name="spell-payment-method-' . esc_attr( $payment_group_id ) . '" value="' . esc_attr( $single['id'] ) . '" />';
+        $result .= '<p class="spell-payment-group__single">' . esc_html( $single['label'] ) . '</p>';
+    }
+
+    $result .= '</fieldset>';
 
         return $result;
     }
