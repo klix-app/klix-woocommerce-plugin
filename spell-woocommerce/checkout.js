@@ -1,6 +1,7 @@
 const klix_settings = window.klixPaymentData || {};
 const { createElement, useState, useEffect } = window.wp.element;
 const { __ } = window.wp.i18n;
+const { select } = window.wp.data;
 
 const Content = (props) => {
     const { eventRegistration = {}, emitResponse = {} } = props || {};
@@ -23,14 +24,24 @@ const Content = (props) => {
     entries.sort((a, b) => a[1].localeCompare(b[1]));
     const sortedCountries = [...entries, ...otherEntry];
 
-    // Default selections
     const defaultCountry = sortedCountries.length ? sortedCountries[0][0] : '';
     const [selectedCountry, setSelectedCountry] = useState(defaultCountry);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('klix-payments');
 
+    useEffect(() => {
+        const country=select('wc/store/cart').getCustomerData().shippingAddress.country
+
+        if(country == null) {
+            setSelectedCountry(defaultCountry);
+        }
+        else {
+            setSelectedCountry(country);
+        }
+    }, []);
+
     // ✅ Register the payment processing callback
     useEffect(() => {
-        const register = onPaymentProcessing || onPaymentSetup;
+        const register = onPaymentSetup || onPaymentProcessing;
         if (!register) return;
 
         const unsubscribe = register(async () => {
@@ -163,7 +174,6 @@ const Content = (props) => {
                                 onChange: () => {
                                     setSelectedPaymentMethod(method);
                                     window.klixSelectedMethod = method; // For debugging
-                                    console.log('Selected method:', method);
                                 },
                                 style: {
                                     margin: 0,
@@ -192,14 +202,12 @@ const Content = (props) => {
 
 // ✅ Register the payment method
 try {
-    console.log('Registering Klix payment method');
     window.wc.wcBlocksRegistry.registerPaymentMethod({
         name: 'klix-payments',
         label: klix_settings.title || 'Klix',
         content: createElement(Content),
         edit: createElement(Content),
         canMakePayment: () => {
-            console.log('canMakePayment called for klix-payments');
             return true;
         },
         ariaLabel: klix_settings.title || 'Klix',

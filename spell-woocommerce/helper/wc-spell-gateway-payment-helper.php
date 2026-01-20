@@ -93,7 +93,7 @@ class WC_Spell_Gateway_Payment_Helper
     $result .= '<fieldset class="spell-payment-group" id="spell-payment-group-' . esc_attr( $payment_group_id ) . '">';
     $result .= '<legend class="spell-payment-group__legend">' . $label . '</legend>';
 
-    if ( count( $payment_methods ) > 1 ) {
+    if ( count( $payment_methods ) > 0 ) {
         $result .= '<div class="spell-payment-group__grid">';
         foreach ( $payment_methods as $index => $payment_method ) {
             $method_id    = esc_attr( $payment_method['id'] );
