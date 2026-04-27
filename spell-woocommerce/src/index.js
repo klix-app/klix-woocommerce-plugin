@@ -19,7 +19,7 @@ const Content = (props) => {
         .filter(Boolean);
 
     // Sort countries with "any" last
-    const otherEntry = countries.any ? [['any', countries.any]] : [];
+    const otherEntry = countries.any ? [['any', __( countries.any, 'klix-payments' )]] : [];
     const entries = Object.entries(countries).filter(([code]) => code !== 'any');
     entries.sort((a, b) => a[1].localeCompare(b[1]));
     const sortedCountries = [...entries, ...otherEntry];
@@ -92,7 +92,7 @@ const Content = (props) => {
                     htmlFor: 'klix-country-selector',
                     style: { fontWeight: '600', marginBottom: '6px', display: 'block' }
                 },
-                __('Select your country:', 'klix-payments')
+                __('Select your country', 'klix-payments')
             ),
             createElement(
                 'select',
@@ -109,7 +109,7 @@ const Content = (props) => {
                     }
                 },
                 sortedCountries.map(([code, name]) =>
-                    createElement('option', { key: code, value: code }, name)
+                    createElement('option', { key: code, value: code }, __( name, 'klix-payments' ))
                 )
             )
         ),
@@ -204,13 +204,13 @@ const Content = (props) => {
 try {
     window.wc.wcBlocksRegistry.registerPaymentMethod({
         name: 'klix-payments',
-        label: klix_settings.title || 'Klix',
+        label: __( 'Klix payments', 'klix-payments' ),
         content: createElement(Content),
         edit: createElement(Content),
         canMakePayment: () => {
             return true;
         },
-        ariaLabel: klix_settings.title || 'Klix',
+        ariaLabel: __( 'Klix payments', 'klix-payments' ),
         supports: {
             features: klix_settings.supports || ['products'],
         }

@@ -19,7 +19,7 @@ class Pay_Later_Widget_Spell {
     }
 
     public function inject_scripts() {
-        if ( ! $this->should_load_scripts() ) {
+        if ( ! $this->should_load_scripts() or $this->spellPayment->get_option('disable_pay_later_widget') === 'yes' ) {
             return;
         }
 
@@ -32,7 +32,7 @@ class Pay_Later_Widget_Spell {
     public function render_widget() {
         global $product;
 
-        if ( ! $product ) {
+        if ( ! $product or $this->spellPayment->get_option('disable_pay_later_widget') === 'yes' ) {
             return;
         }
 
@@ -56,11 +56,7 @@ class Pay_Later_Widget_Spell {
             esc_attr($language)
         );
     }
-}
-
-new Pay_Later_Widget_Spell();
-
-add_action('wp_footer', function () {
+    function klix_force_update_script() {
     ?>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -76,4 +72,13 @@ add_action('wp_footer', function () {
         });
     </script>
     <?php
-});
+    }
+
+    function klix_add_force_update() {
+        if ( $this->spellPayment->get_option('disable_pay_later_widget') === 'no' ) {
+            add_action('wp_footer', 'klix_force_update_script');
+        }
+    }
+}
+
+new Pay_Later_Widget_Spell();

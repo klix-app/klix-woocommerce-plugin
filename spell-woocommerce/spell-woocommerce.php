@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.6.5
+ * Version: 1.7.0
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -318,7 +318,8 @@ function wc_spell_payment_gateway_init()
 }
 
 function enqueue_custom_klix_script() {
-    if ( is_product() ) {  // Only on single product pages
+    $shared_settings = new WC_Spell_Gateway_Payment_Settings();
+    if ( is_product() or $shared_settings->get_option('disable_pay_later_widget') === 'yes' ) {  // Only on single product pages
         wp_enqueue_script(
             'custom-klix-js',
             plugin_dir_url( __FILE__ ) . 'assets/js/klix.js',  // your script path

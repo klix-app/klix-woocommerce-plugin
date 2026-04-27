@@ -16,29 +16,35 @@ final class Klix_Gateway_Blocks extends AbstractPaymentMethodType {
     }
 
     public function get_payment_method_script_handles() {
+    $script_path = 'build/index.js';
+    $script_url  = plugin_dir_url( __FILE__ ) . $script_path;
+    
+    $asset_file = plugin_dir_path( __FILE__ ) . 'build/index.asset.php';
+    $asset_data = file_exists( $asset_file ) 
+        ? include $asset_file 
+        : array( 'dependencies' => array(), 'version' => '1.0.1' );
 
-        wp_register_script(
+    wp_register_script(
+        'klix-blocks-integration',
+        $script_url,
+        $asset_data['dependencies'], 
+        $asset_data['version'],      
+        true
+    );
+
+    if ( function_exists( 'wp_set_script_translations' ) ) {
+        wp_set_script_translations(
             'klix-blocks-integration',
-            plugin_dir_url(__FILE__) . 'checkout.js',
-            [
-                'wc-blocks-registry',
-                'wc-settings',
-                'wp-element',
-                'wp-html-entities',
-                'wp-i18n',
-            ],
-            '1.0.1',
-            true
+            'klix-payments',
+            plugin_dir_path( __FILE__ ) . 'languages'
         );
-        $payment_method_data = $this->get_payment_method_data();
-        wp_localize_script('klix-blocks-integration', 'klixPaymentData', $payment_method_data);
-
-        if( function_exists( 'wp_set_script_translations' ) ) {            
-            wp_set_script_translations( 'klix-blocks-integration');
-            
-        }
-        return [ 'klix-blocks-integration' ];
     }
+
+    $payment_method_data = $this->get_payment_method_data();
+    wp_localize_script( 'klix-blocks-integration', 'klixPaymentData', $payment_method_data );
+
+    return array( 'klix-blocks-integration' );
+}
 
     public function get_payment_method_data() {
         $shared_settings = new WC_Spell_Gateway_Payment_Settings();

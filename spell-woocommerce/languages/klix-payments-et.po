@@ -1,0 +1,36 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-04-24T09:45:58+00:00\n"
+"PO-Revision-Date: 2026-04-24T09:45:58+00:00\n"
+"Language: et\n"
+
+#: build/index.js:1
+msgid "Klix payments"
+msgstr "Klix maksed"
+
+#: build/index.js:2
+msgid "Select your country"
+msgstr "Vali oma riik"
+
+#: build/index.js:3
+msgid "Other"
+msgstr "Muu"
+
+#: build/index.js:4
+msgid "Lithuania"
+msgstr "Leedu"
+
+#: build/index.js:5
+msgid "Latvia"
+msgstr "Läti"
+
+#: build/index.js:6
+msgid "Estonia"
+msgstr "Eesti"
