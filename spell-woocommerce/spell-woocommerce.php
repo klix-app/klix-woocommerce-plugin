@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.7.0
+ * Version: 1.7.1
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -46,11 +46,6 @@ class WC_Spell
     public function include_template_functions()
     {
         include('templates/product/spell-product.php');
-        include('templates/product/spell-product-controller.php');
-        include('templates/cart/spell-cart.php');
-        include('templates/cart/spell-cart-controller.php');
-        include('templates/checkout/spell-checkout.php');
-        include('templates/checkout/spell-callback-controller.php');
     }
 
     public function init_helper_classes()

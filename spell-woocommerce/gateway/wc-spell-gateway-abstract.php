@@ -275,66 +275,6 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         );
     }
 
-    /**
-     * @param $products
-     * @param false $process_single_product
-     * @return array|string[]
-     * @throws Exception
-     */
-    public function process_direct_payment($products, $process_single_product = false)
-    {
-        /**
-         * This is a workaround for the "Pay Now" on PDP when the shopping cart might be empty.
-         */
-        if ($process_single_product) {
-            // Clear the Cart
-            WC()->cart->empty_cart();
-
-            $product_id = $products[0]['product_id'];
-            WC()->cart->add_to_cart($product_id);
-        }
-
-        $total = round(WC()->cart->get_cart_contents_total() * 100);
-        if (WC()->cart->get_cart_discount_total() > 0) {
-            $discount = round(WC()->cart->get_cart_discount_total() * 100);
-            $total -= $discount;
-        }
-
-        $spell = $this->spell_api();
-        $url = home_url() . '/?wc-api=wc_spell_callback';
-
-        $params = [
-            'success_callback' => $url . '&action=paid',
-            'success_redirect' => $url . '&action=paid',
-            'failure_redirect' => $url . '&action=cancel',
-            'cancel_redirect' => $url . '&action=cancel',
-            'creator_agent' => 'Woocommerce v3 module: ' . SPELL_MODULE_VERSION,
-            'platform' => 'woocommerce',
-            'client' => [
-                'email' => 'dummy@data.com',
-            ],
-            'purchase' => [
-                'notes' => $this->payment_helper->get_notes(),
-                'products' => $products,
-                'shipping_options' => $this->get_shipping_packages(),
-            ],
-            'total_override' => $total,
-            'brand_id' => $this->shared_settings->get_option('brand-id'),
-            'payment_method_whitelist' => ['klix']
-        ];
-
-        $directPayment = $spell->create_payment($params);
-        if (!$directPayment || !array_key_exists('id', $directPayment)) {
-            return array(
-                'status' => 'failure',
-            );
-        }
-
-        return array(
-            'status' => 'success',
-            'data' => $directPayment,
-        );
-    }
     public function get_shipping_packages()
     {
         $result = array();
