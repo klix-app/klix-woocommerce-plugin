@@ -13,7 +13,7 @@ const Content = (props) => {
 
     // Sort and order groups
     let paymentMethodGroups = payment_methods.payment_method_groups || [];
-    const desiredOrder = ['bank_transfer', 'klix_card', 'klix_pay_later'];
+    const desiredOrder = klix_settings.desired_payment_method_order || [];
     paymentMethodGroups = desiredOrder
         .map(name => paymentMethodGroups.find(group => group.name === name))
         .filter(Boolean);

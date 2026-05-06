@@ -361,4 +361,45 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
 
         return $result;
     }
+    public function generate_klix_sortable_html($key, $data) {
+    $field_key = $this->get_field_key($key);
+    $groups    =    array(
+            'bank_transfer'  => __('Bank transfer', 'klix-payments'),
+            'klix_card'      => __('Card', 'klix-payments'),
+            'klix_pay_later' => __('Pay Later', 'klix-payments'),
+        );
+    $available = array_keys($groups);
+
+    $saved = json_decode((string) $this->get_option($key), true);
+    $order = is_array($saved) ? $saved : array();
+
+    $order = array_values(array_intersect($order, $available));
+    foreach ($available as $id) {
+        if (!in_array($id, $order, true)) $order[] = $id;
+    }
+
+    ob_start(); ?>
+    <tr valign="top">
+        <th scope="row"><label><?php echo esc_html($data['title']); ?></label></th>
+        <td>
+            <ul class="klix-sortable" id="<?php echo esc_attr($field_key); ?>_list" style="max-width:400px;">
+                <?php foreach ($order as $id):
+                    $label = $groups[$id] ?? $id; ?>
+                    <li data-id="<?php echo esc_attr($id); ?>"
+                        style="cursor:move;padding:8px 12px;border:1px solid #ccd0d4;margin-bottom:4px;background:#fff;">
+                        <span class="dashicons dashicons-menu" style="margin-right:8px;"></span>
+                        <?php echo esc_html($label); ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <input type="hidden"
+                   name="<?php echo esc_attr($field_key); ?>"
+                   id="<?php echo esc_attr($field_key); ?>"
+                   value="<?php echo esc_attr(wp_json_encode($order)); ?>" />
+            <p class="description"><?php echo esc_html($data['description']); ?></p>
+        </td>
+    </tr>
+    <?php return ob_get_clean();
+}
+
 }

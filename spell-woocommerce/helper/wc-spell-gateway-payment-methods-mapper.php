@@ -12,6 +12,7 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
     {
         $this->api_response = $api_response;
         $this->active_country = $this->get_active_country();
+        $this->payment_method_order = $this->resolve_method_order();
     }
 
     /**
@@ -22,6 +23,28 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
         $this->map_payment_groups();
 
         return $this->result;
+    }
+
+    private function resolve_method_order()
+    {
+        $default = $this->payment_method_order;
+
+        $settings = get_option('woocommerce_klix-payments_settings', array());
+        if (empty($settings['method_order'])) {
+            return $default;
+        }
+
+        $saved = json_decode($settings['method_order'], true);
+        if (!is_array($saved)) {
+            return $default;
+        }
+
+        $clean = array_values(array_intersect($saved, $default));
+        foreach ($default as $id) {
+            if (!in_array($id, $clean, true)) $clean[] = $id;
+        }
+
+        return $clean;
     }
 
     private function map_payment_groups()

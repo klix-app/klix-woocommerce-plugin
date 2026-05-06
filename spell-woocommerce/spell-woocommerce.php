@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.7.1
+ * Version: 1.7.2
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -191,25 +191,6 @@ function wc_spell_payment_gateway_init()
         return $array;
     }
 
-    /**
-	 * By default, new payment gateways are put at the bottom of the list on the admin "Payments" settings screen.
-	 *
-	 * @param array $ordering Existing ordering of the payment gateways.
-	 *
-	 * @return array Modified ordering.
-	 */
-	function set_gateway_in_sorting_list( $ordering ) {
-        
-		$ordering                   = (array) $ordering;
-
-        $ordering = add_payment_methods($ordering, ['bank_transfer'=>0,'klix_card'=>0,'klix_pay_later'=>0]);
-        
-
-		return $ordering;
-	}
-
-	add_filter( 'option_woocommerce_gateway_order', 'set_gateway_in_sorting_list' );
-	add_filter( 'default_option_woocommerce_gateway_order', 'set_gateway_in_sorting_list' );
 	add_filter( 'woocommerce_payment_gateways', 'woocommerce_add_spell_gateway' );
 
     function wp_add_spell_setting_link($links)
@@ -325,3 +306,19 @@ function enqueue_custom_klix_script() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'enqueue_custom_klix_script' );
+add_action('admin_enqueue_scripts', function ($hook) {
+    if ($hook !== 'woocommerce_page_wc-settings') return;
+    if (($_GET['section'] ?? '') !== 'klix-payments') return;
+
+    wp_enqueue_script('jquery-ui-sortable');
+    wp_add_inline_script('jquery-ui-sortable', "
+        jQuery(function($){
+            $('.klix-sortable').sortable({
+                update: function() {
+                    var ids = $(this).children('li').map(function(){ return $(this).data('id'); }).get();
+                    $('#' + this.id.replace('_list','')).val(JSON.stringify(ids));
+                }
+            }).disableSelection();
+        });
+    ");
+});

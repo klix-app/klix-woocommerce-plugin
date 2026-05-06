@@ -76,6 +76,12 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
                 'description' => 'If not set, "Choose payment method on next page" will be used',
                 'default' => 'Choose payment method on next page',
             ),
+            'method_order' => array(
+                'title'       => __('Payment method order', 'klix-payments'),
+                'type'        => 'klix_sortable',
+                'description' => __('Drag to reorder how payment methods appear at checkout.', 'klix-payments'),
+                'default'     => '',
+            ),
             'disable_pay_later_widget' => array(
                 'title' => __('Disable Pay Later widget', 'klix-payments'),
                 'label' => __('Disable Pay Later widget', 'klix-payments'),
