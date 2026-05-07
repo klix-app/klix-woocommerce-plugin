@@ -3,6 +3,21 @@ const { createElement, useState, useEffect } = window.wp.element;
 const { __ } = window.wp.i18n;
 const { select } = window.wp.data;
 
+function sortBankMethods(methods, order) {
+    const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    let remaining = [...methods];
+    const sorted = [];
+
+    order.forEach(key => {
+        const pattern = new RegExp(`^${escape(key)}_(lv|ee|lt)_pis$`);
+        const matches = remaining.filter(m => pattern.test(m));
+        sorted.push(...matches);
+        remaining = remaining.filter(m => !pattern.test(m));
+    });
+
+    return [...sorted, ...remaining];
+}
+
 const Content = (props) => {
     const { eventRegistration = {}, emitResponse = {} } = props || {};
     const { onPaymentProcessing, onPaymentSetup } = eventRegistration;
@@ -17,6 +32,15 @@ const Content = (props) => {
     paymentMethodGroups = desiredOrder
         .map(name => paymentMethodGroups.find(group => group.name === name))
         .filter(Boolean);
+
+    const bankOrder = klix_settings.desired_multilink_method_order || [];
+    if (bankOrder.length) {
+        paymentMethodGroups = paymentMethodGroups.map(group =>
+            group.name === 'bank_transfer'
+                ? { ...group, methods: sortBankMethods(group.methods, bankOrder) }
+                : group
+        );
+    }
 
     // Sort countries with "any" last
     const otherEntry = countries.any ? [['any', __( countries.any, 'klix-payments' )]] : [];
@@ -39,7 +63,7 @@ const Content = (props) => {
         }
     }, []);
 
-    // ✅ Register the payment processing callback
+    // Register the payment processing callback
     useEffect(() => {
         const register = onPaymentSetup || onPaymentProcessing;
         if (!register) return;
@@ -200,7 +224,7 @@ const Content = (props) => {
     );
 };
 
-// ✅ Register the payment method
+// Register the payment method
 try {
     window.wc.wcBlocksRegistry.registerPaymentMethod({
         name: 'klix-payments',

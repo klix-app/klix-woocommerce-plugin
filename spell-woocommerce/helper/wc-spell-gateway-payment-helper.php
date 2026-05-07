@@ -37,40 +37,6 @@ class WC_Spell_Gateway_Payment_Helper
         return $ln;
     }
 
-    /**
-     * @return string
-     */
-    public function get_button_image_url()
-    {
-        if (defined('ICL_LANGUAGE_CODE')) {
-            $locale = ICL_LANGUAGE_CODE;
-        } else {
-            $locale = get_locale();
-        }
-        switch ($locale) {
-            case 'lv_LV':
-            case 'lv':
-                $image_url = 'https://developers.klix.app/images/logos/quick-checkout-lv.gif';
-                break;
-            case 'lt_LT':
-            case 'lt':
-                $image_url = 'https://developers.klix.app/images/logos/quick-checkout-lt.gif';
-                break;
-            case 'et_EE':
-            case 'et':
-                $image_url = 'https://developers.klix.app/images/logos/quick-checkout-ee.gif';
-                break;
-            case 'ru_RU':
-            case 'ru':
-                $image_url = 'https://developers.klix.app/images/logos/quick-checkout-ru.gif';
-                break;
-            default:
-                $image_url = 'https://developers.klix.app/images/logos/quick-checkout-en.gif';
-                break;
-        }
-        return $image_url;
-    }
-
     public function render_payment_group($payment_group)
     {
         $result = '';
@@ -80,6 +46,27 @@ class WC_Spell_Gateway_Payment_Helper
 
         return $result;
     }
+
+    function sort_multilink_methods_by_order(array $methods, array $order): array
+    {
+        $sorted = [];
+        $remaining = $methods;
+
+        foreach ($order as $key) {
+            $pattern = '/^' . preg_quote($key, '/') . '_(lv|ee|lt)_pis$/';
+
+            foreach ($remaining as $i => $method) {
+                if (preg_match($pattern, $method['id'])) {
+                    $sorted[] = $method;
+                    unset($remaining[$i]);
+                }
+            }
+        }
+        
+        return array_merge($sorted, array_values($remaining));
+    }
+
+
 
     /**
      * @param $payment_methods
@@ -93,6 +80,11 @@ class WC_Spell_Gateway_Payment_Helper
     $result .= '<fieldset class="spell-payment-group" id="spell-payment-group-' . esc_attr( $payment_group_id ) . '">';
     $result .= '<legend class="spell-payment-group__legend">' . $label . '</legend>';
 
+    $shared_settings = new WC_Spell_Gateway_Payment_Settings();
+    $order= json_decode($shared_settings->get_option('multilink_method_order'), true);
+
+    $payment_methods = $this->sort_methods_by_order($payment_methods, $order);
+    
     if ( count( $payment_methods ) > 0 ) {
         $result .= '<div class="spell-payment-group__grid">';
         foreach ( $payment_methods as $index => $payment_method ) {

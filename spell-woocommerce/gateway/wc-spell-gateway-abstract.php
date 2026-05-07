@@ -192,11 +192,6 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         }
     }
 
-    public function get_button_image_url()
-    {
-        return $this->payment_helper->get_button_image_url();
-    }
-
     public function process_payment($o_id)
     {
         global $woocommerce;
@@ -401,5 +396,54 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
     </tr>
     <?php return ob_get_clean();
 }
+
+    public function generate_klix_multilink_sortable_html($key, $data) {
+    $field_key = $this->get_field_key($key);
+    $groups    =    array(
+            'citadele'  => __('Citadele', 'klix-payments'),
+            'swedbank'      => __('Swedbank', 'klix-payments'),
+            'seb' => __('SEB', 'klix-payments'),
+            'luminor' => __('Luminor', 'klix-payments'),
+            'siauliu' => __('Artea', 'klix-payments'),
+            'revolut' => __('Revolut', 'klix-payments'),
+            'lku' => __('LKU', 'klix-payments'),
+            'lhv' => __('LHV', 'klix-payments'),
+            'indexo' => __('Indexo', 'klix-payments'),
+            'coop' => __('COOP', 'klix-payments'),
+            'paysera' => __('Paysera', 'klix-payments')
+        );
+    $available = array_keys($groups);
+
+    $saved = json_decode((string) $this->get_option($key), true);
+    $order = is_array($saved) ? $saved : array();
+
+    $order = array_values(array_intersect($order, $available));
+    foreach ($available as $id) {
+        if (!in_array($id, $order, true)) $order[] = $id;
+    }
+
+    ob_start(); ?>
+    <tr valign="top">
+        <th scope="row"><label><?php echo esc_html($data['title']); ?></label></th>
+        <td>
+            <ul class="klix-multilink-sortable" id="<?php echo esc_attr($field_key); ?>_list" style="max-width:400px;">
+                <?php foreach ($order as $id):
+                    $label = $groups[$id] ?? $id; ?>
+                    <li data-id="<?php echo esc_attr($id); ?>"
+                        style="cursor:move;padding:8px 12px;border:1px solid #ccd0d4;margin-bottom:4px;background:#fff;">
+                        <span class="dashicons dashicons-menu" style="margin-right:8px;"></span>
+                        <?php echo esc_html($label); ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <input type="hidden"
+                   name="<?php echo esc_attr($field_key); ?>"
+                   id="<?php echo esc_attr($field_key); ?>"
+                   value="<?php echo esc_attr(wp_json_encode($order)); ?>" />
+            <p class="description"><?php echo esc_html($data['description']); ?></p>
+        </td>
+    </tr>
+    <?php return ob_get_clean();
+    }
 
 }

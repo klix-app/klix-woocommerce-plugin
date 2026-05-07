@@ -4,6 +4,7 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
 {
     const IMAGE_BASE_URL = 'https://portal.klix.app';
     private $payment_method_order=["bank_transfer","klix_card","klix_pay_later"];
+    private $multilink_order=["citadele","luminor","seb","swedbank","revolut","lku","lhv","indexo","coop","paysera"];
     private $api_response;
     private $active_country;
     private $result = [];
@@ -13,6 +14,7 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
         $this->api_response = $api_response;
         $this->active_country = $this->get_active_country();
         $this->payment_method_order = $this->resolve_method_order();
+        $this->multilink_order = $this->resolve_multilink_method_order();
     }
 
     /**
@@ -35,6 +37,28 @@ class WC_Spell_Gateway_Payment_Methods_Mapper
         }
 
         $saved = json_decode($settings['method_order'], true);
+        if (!is_array($saved)) {
+            return $default;
+        }
+
+        $clean = array_values(array_intersect($saved, $default));
+        foreach ($default as $id) {
+            if (!in_array($id, $clean, true)) $clean[] = $id;
+        }
+
+        return $clean;
+    }
+
+    private function resolve_multilink_method_order()
+    {
+        $default = $this->multilink_order;
+
+        $settings = get_option('woocommerce_klix-payments_settings', array());
+        if (empty($settings['multilink_method_order'])) {
+            return $default;
+        }
+
+        $saved = json_decode($settings['multilink_method_order'], true);
         if (!is_array($saved)) {
             return $default;
         }

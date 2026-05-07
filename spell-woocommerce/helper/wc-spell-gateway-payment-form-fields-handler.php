@@ -82,6 +82,12 @@ class WC_Spell_Gateway_Payment_Form_Fields_Handler
                 'description' => __('Drag to reorder how payment methods appear at checkout.', 'klix-payments'),
                 'default'     => '',
             ),
+            'multilink_method_order' => array(
+                'title'       => __('Bank transfer method order', 'klix-payments'),
+                'type'        => 'klix_multilink_sortable',
+                'description' => __('Drag to reorder how banks will appear at checkout.', 'klix-payments'),
+                'default'     => '',
+            ),
             'disable_pay_later_widget' => array(
                 'title' => __('Disable Pay Later widget', 'klix-payments'),
                 'label' => __('Disable Pay Later widget', 'klix-payments'),

@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.7.2
+ * Version: 1.7.3
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -314,6 +314,16 @@ add_action('admin_enqueue_scripts', function ($hook) {
     wp_add_inline_script('jquery-ui-sortable', "
         jQuery(function($){
             $('.klix-sortable').sortable({
+                update: function() {
+                    var ids = $(this).children('li').map(function(){ return $(this).data('id'); }).get();
+                    $('#' + this.id.replace('_list','')).val(JSON.stringify(ids));
+                }
+            }).disableSelection();
+        });
+    ");
+    wp_add_inline_script('jquery-ui-sortable', "
+        jQuery(function($){
+            $('.klix-multilink-sortable').sortable({
                 update: function() {
                     var ids = $(this).children('li').map(function(){ return $(this).data('id'); }).get();
                     $('#' + this.id.replace('_list','')).val(JSON.stringify(ids));
