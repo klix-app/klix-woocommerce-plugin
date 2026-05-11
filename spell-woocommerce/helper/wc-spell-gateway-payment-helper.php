@@ -83,7 +83,7 @@ class WC_Spell_Gateway_Payment_Helper
     $shared_settings = new WC_Spell_Gateway_Payment_Settings();
     $order= json_decode($shared_settings->get_option('multilink_method_order'), true);
 
-    $payment_methods = $this->sort_methods_by_order($payment_methods, $order);
+    $payment_methods = $this->sort_multilink_methods_by_order($payment_methods, $order);
     
     if ( count( $payment_methods ) > 0 ) {
         $result .= '<div class="spell-payment-group__grid">';
