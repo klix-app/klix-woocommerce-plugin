@@ -239,7 +239,11 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
 
         $payment = $spell->create_payment($params);
 
-        if (!array_key_exists('id', $payment)) {
+        if (!is_array($payment) || empty($payment['id'])) {
+            wc_add_notice(
+                __('We couldn\'t start your payment. Please try again or choose a different payment method.', 'klix-payments'),
+                'error'
+            );
             return array(
                 'result' => 'failure',
             );

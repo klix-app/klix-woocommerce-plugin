@@ -4,3 +4,15 @@
 **/._.DS_Store
 klix-woocommerce.zip
 spell-woocommerce.zip
+node_modules
+src
+package.json
+package-lock.json
+webpack.config.js
+.babelrc
+.eslintrc
+.git
+.github
+bin
+.gitignore
+.distignore

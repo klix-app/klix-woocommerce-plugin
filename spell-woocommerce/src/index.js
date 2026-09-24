@@ -3,6 +3,16 @@ const { createElement, useState, useEffect } = window.wp.element;
 const { __ } = window.wp.i18n;
 const { select } = window.wp.data;
 
+const translateCountry = (name) => {
+    const translations = {
+        'Estonia':   __('Estonia', 'klix-payments'),
+        'Latvia':    __('Latvia', 'klix-payments'),
+        'Lithuania': __('Lithuania', 'klix-payments'),
+        'Other':     __('Other', 'klix-payments'),
+    };
+    return translations[name] || name;
+};
+
 function sortBankMethods(methods, order) {
     const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     let remaining = [...methods];

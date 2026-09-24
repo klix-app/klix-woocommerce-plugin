@@ -1,36 +1,196 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24T15:48:24+00:00\n"
+"PO-Revision-Date: 2026-04-24T09:45:58+00:00\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: lv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-24T09:45:58+00:00\n"
-"PO-Revision-Date: 2026-04-24T09:45:58+00:00\n"
-"Language: lv\n"
 
-#: build/index.js:1
-msgid "Klix payments"
-msgstr "Klix maksājumi"
+#. Plugin Name of the plugin
+#. Description of the plugin
+#: spell-woocommerce.php
+msgid "Klix E-commerce Gateway"
+msgstr ""
 
-#: build/index.js:2
-msgid "Select your country"
-msgstr "Izvēlieties savu valsti"
+#. Author of the plugin
+#: spell-woocommerce.php
+msgid "Klix"
+msgstr ""
 
-#: build/index.js:3
-msgid "Other"
-msgstr "Citi"
+#: gateway/wc-spell-gateway-abstract.php:244
+msgid ""
+"We couldn't start your payment. Please try again or choose a different "
+"payment method."
+msgstr ""
 
-#: build/index.js:4
-msgid "Lithuania"
-msgstr "Lietuva"
+#: gateway/wc-spell-gateway-abstract.php:366
+msgid "Bank transfer"
+msgstr ""
 
-#: build/index.js:5
+#: gateway/wc-spell-gateway-abstract.php:367
+msgid "Card"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:368
+msgid "Pay Later"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:407
+msgid "Citadele"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:408
+msgid "Swedbank"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:409
+msgid "SEB"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:410
+msgid "Luminor"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:411
+msgid "Artea"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:412
+msgid "Revolut"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:413
+msgid "LKU"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:414
+msgid "LHV"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:415
+msgid "Indexo"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:416
+msgid "COOP"
+msgstr ""
+
+#: gateway/wc-spell-gateway-abstract.php:417
+msgid "Paysera"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:14
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:15
+msgid "Enable API"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:21
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:22
+msgid "Enable Block-Based Checkout"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:28
+msgid "Brand ID"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:30
+msgid "Please enter your brand ID"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:37
+msgid "Secret key"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:39
+msgid "Please enter your secret key"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:46
+msgid "Order status"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:48
+msgid "Specify to which status, order should change after successful payment"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:59
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:60
+msgid "Enable payment method selection"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:67
+msgid "Change payment method title"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:73
+msgid "Change payment method description"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:80
+msgid "Payment method order"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:82
+msgid "Drag to reorder how payment methods appear at checkout."
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:86
+msgid "Bank transfer method order"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:88
+msgid "Drag to reorder how banks will appear at checkout."
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:92
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:93
+msgid "Disable Pay Later widget"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:99
+msgid "Hide Pay Later payment option under specified amount"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:106
+msgid "Minimal amount for Pay Later"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:114
+msgid "Debug Log"
+msgstr ""
+
+#: helper/wc-spell-gateway-payment-form-fields-handler.php:116
+msgid "Enable logging"
+msgstr ""
+
+#: spell-woocommerce.php:200
+msgid "Settings"
+msgstr ""
+
+#: src/index.js:8
+msgid "Estonia"
+msgstr "Igaunija"
+
+#: src/index.js:9
 msgid "Latvia"
 msgstr "Latvija"
 
-#: build/index.js:6
-msgid "Estonia"
-msgstr "Igaunija"
+#: src/index.js:10
+msgid "Lithuania"
+msgstr "Lietuva"
+
+#: src/index.js:11
+msgid "Other"
+msgstr "Citi"
+
+#: src/index.js:129
+msgid "Select your country"
+msgstr "Izvēlieties savu valsti"
+
+#: src/index.js:241 src/index.js:247
+msgid "Klix payments"
+msgstr "Klix maksājumi"
