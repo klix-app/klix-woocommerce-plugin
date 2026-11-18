@@ -4,7 +4,7 @@
  * Plugin Name: Klix E-commerce Gateway
  * Plugin URI:
  * Description: Klix E-commerce Gateway
- * Version: 1.7.5
+ * Version: 1.7.6
  * Author: Klix
  * Author URI:
  * Developer: Klix
@@ -12,7 +12,7 @@
  *
  * Woo: 12345:342928dfsfhsf8429842374wdf4234sfd
  * WC requires at least: 3.3.4
- * WC tested up to: 4.0.0
+ * WC tested up to: 10.0.0
  *
  * Copyright: © 2020 Klix
  * License: GNU General Public License v3.0

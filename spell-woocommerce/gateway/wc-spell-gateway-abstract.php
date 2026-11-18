@@ -25,6 +25,11 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
      */
     private $global_mapping;
 
+    /**
+     * @var bool
+     */
+    private static $callback_hook_registered = false;
+
     public function __construct()
     {
         $this->init_form_fields();
@@ -61,16 +66,14 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
             'woocommerce_update_options_payment_gateways_klix-payments',
             array($this, 'process_admin_options')
         );
-        str_replace(
-            'https:',
-            'http:',
-            add_query_arg('wc-api', 'WC_Spell_Gateway', home_url('/'))
-        );
 
-        add_action(
-            'woocommerce_api_wc_gateway_klix',
-            array($this, 'handle_callback')
-        );
+        if (!self::$callback_hook_registered) {
+            add_action(
+                'woocommerce_api_wc_gateway_klix',
+                array($this, 'handle_callback')
+            );
+            self::$callback_hook_registered = true;
+        }
     }
 
     public function spell_api()
@@ -107,7 +110,20 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
     {
         if (!$o->is_paid()) {
             $payment_methods=get_transient('spell-payment-methods');
-            $payment_method_name=$payment_methods['names'][$purchase['transaction_data']['payment_method']];
+            $method_key = null;
+            if (isset($purchase['transaction_data']['payment_method'])) {
+                $method_key = $purchase['transaction_data']['payment_method'];
+            } elseif (!empty($purchase['payment_attempts']) && is_array($purchase['payment_attempts'])) {
+                $last_attempt = end($purchase['payment_attempts']);
+                if (is_array($last_attempt) && isset($last_attempt['payment_method'])) {
+                    $method_key = $last_attempt['payment_method'];
+                }
+            }
+
+            $payment_method_name = 'Klix';
+            if ($method_key !== null && isset($payment_methods['names'][$method_key])) {
+                $payment_method_name = $payment_methods['names'][$method_key];
+            }
             $o->payment_complete($purchase['id']);
             $o->set_payment_method_title($payment_method_name);
             $o->save();
@@ -122,13 +138,11 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
     public function handle_callback()
     {
         $this->spell_api()->log_info('received callback: ' . print_r($_GET, true));
-        $GLOBALS['wpdb']->get_results(
-            "SELECT GET_LOCK('spell_payment', 15);"
-        );
 
         global $woocommerce;
-        
-        $o = wc_get_order($_GET["id"]);
+
+        $order_id = isset($_GET['id']) ? absint($_GET['id']) : 0;
+        $o = $order_id ? wc_get_order($order_id) : false;
 
         if($o===false)
         {
@@ -136,29 +150,84 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
             return;
         }
 
-        $payment_redirect = $this->get_return_url($o);
-        $payment_id=$this->retrieve_payment_id($_GET['id']);
-        
-        if ($payment_id !== "") {
-            $purchase=$this->spell_api()->get_payment($payment_id);
-            if ($purchase && $purchase['status'] == 'paid') {
-                $this->confirm_order($o,$purchase);
-            } 
-            else {
-                if ($o->get_status() === "pending") {
-                    $o->update_status(
-                        'wc-failed',
-                        __('Order not paid.')
-                    );
-                    $this->log_order_info('payment not successful', $o);
+        $lock_name = 'spell_payment_' . $order_id;
+        $lock_result = $GLOBALS['wpdb']->get_var(
+            $GLOBALS['wpdb']->prepare("SELECT GET_LOCK(%s, 15)", $lock_name)
+        );
+
+        if ($lock_result !== '1') {
+            $this->spell_api()->log_error('Could not acquire lock for order ' . $o->get_order_number());
+            if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+                header("Location: " . wc_get_page_permalink('shop'));
+            }
+            return;
+        }
+
+        $caller_is_authorized = false;
+
+        if (WC()->session && WC()->session->get('spell_payment_id_' . $order_id)) {
+            $caller_is_authorized = true;
+        }
+
+        if (!$caller_is_authorized && is_user_logged_in() && (int) $o->get_customer_id() === get_current_user_id()) {
+            $caller_is_authorized = true;
+        }
+
+        $payment_redirect = wc_get_page_permalink('shop');
+
+        if ($o->is_paid()) {
+            $this->log_order_info('order already paid, skipping API call', $o);
+            if ($caller_is_authorized) {
+                $payment_redirect = $this->get_return_url($o);
+            }
+        } else {
+            $payment_id=$this->retrieve_payment_id($order_id);
+
+            if ($payment_id !== "") {
+                $purchase=$this->spell_api()->get_payment($payment_id);
+
+                $is_paid = $purchase && $purchase['status'] == 'paid';
+
+                $expected_reference = (string) $o->get_order_number();
+                $actual_reference = isset($purchase['reference']) ? (string) $purchase['reference'] : '';
+                $expected_amount = (int) round($o->get_total() * 100);
+                $actual_amount = 0;
+
+                if (isset($purchase['purchase']['total'])) {
+                    $actual_amount = (int) $purchase['purchase']['total'];
                 }
-                $payment_redirect = $woocommerce->cart->get_cart_url();
+
+                $matches = $actual_reference === $expected_reference && $actual_amount === $expected_amount;
+
+                if ($is_paid && $matches) {
+                    $this->confirm_order($o, $purchase);
+                    $caller_is_authorized = true;
+                    $payment_redirect = $this->get_return_url($o);
+                } else {
+                    if ($is_paid && !$matches) {
+                        $this->spell_api()->log_error(sprintf(
+                            'Purchase %s is paid but does not match order %s (reference=%s)',
+                            isset($purchase['id']) ? $purchase['id'] : '?',
+                            $o->get_order_number(),
+                            $actual_reference
+                        ));
+                    }
+
+                    if ($o->get_status() === "pending") {
+                        $o->update_status(
+                            'wc-failed',
+                            __('Order not paid.')
+                            );
+                        $this->log_order_info('payment not successful', $o);
+                    }
+                    $payment_redirect = $woocommerce->cart->get_cart_url();
+                }
             }
         }
-        
+
 
         $GLOBALS['wpdb']->get_results(
-            "SELECT RELEASE_LOCK('spell_payment');"
+            $GLOBALS['wpdb']->prepare("SELECT RELEASE_LOCK(%s)", $lock_name)
         );
         if($_SERVER['REQUEST_METHOD'] == 'GET') {
             header("Location: " . $payment_redirect);
@@ -240,6 +309,19 @@ abstract class WC_Spell_Gateway_Abstract extends WC_Payment_Gateway
         $payment = $spell->create_payment($params);
 
         if (!is_array($payment) || empty($payment['id'])) {
+            wc_add_notice(
+                __('We couldn\'t start your payment. Please try again or choose a different payment method.', 'klix-payments'),
+                'error'
+            );
+            return array(
+                'result' => 'failure',
+            );
+        }
+        if (empty($payment['checkout_url'])) {
+            $this->spell_api()->log_error(
+                'create_payment returned no checkout_url for order ' . $o->get_order_number()
+                . ': ' . wc_print_r($payment, true)
+            );
             wc_add_notice(
                 __('We couldn\'t start your payment. Please try again or choose a different payment method.', 'klix-payments'),
                 'error'

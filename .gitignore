@@ -16,3 +16,4 @@ webpack.config.js
 bin
 .gitignore
 .distignore
+release
